@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build: .
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+      - APP_TITLE=${APP_TITLE}
+      - API_VERSION=${API_VERSION}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - OMDB_API_KEY=${OMDB_API_KEY}
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+    command: ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  cache:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    command: /bin/sh -c "redis-server --requirepass REDIS_PASSWORD"
+    volumes:
+      - cache_volume:/data
+
+
+volumes:
+  cache_volume:
