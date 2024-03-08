@@ -1,0 +1,12 @@
+
+
+def search_trailers(query: str) -> TrailerResult
+    movies = movie_provider.search_multi(query)
+    movies_with_trailer = []
+    for movie in movies:
+        movie_data = movie_provider.get_by_id(movie.imdbID)
+        trailer_data = trailer_provider.search_multi_return_first(movie_data.Title)
+        movie_data.youtube_id = trailer_data.id.videoId
+        movies_with_trailer.append(movie_data)
+    return movies_with_trailer
+    

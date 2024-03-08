@@ -1,3 +1,4 @@
+from pydantic import Field
 from app import models
 
 
@@ -42,3 +43,12 @@ class YoutubeID(models.CustomBase):
 class YoutubeTrailerData(models.CustomBase):
     id: YoutubeID
     snippet: YoutubeTrailerDataSnippet
+
+
+class MovieDataWithTrailer(MovieData):
+    trailer_id: str | None = None
+
+
+class TrailerResult(models.CustomBase):
+    movies: list[MovieDataWithTrailer]
+    from_cache: bool = Field(default=False)
