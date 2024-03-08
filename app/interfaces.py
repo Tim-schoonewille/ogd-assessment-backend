@@ -1,5 +1,16 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Any
 
 
 class ICacheProvider(ABC):
-    pass
+    @abstractmethod
+    async def get_str(self, key: str) -> str: ...
+
+    @abstractmethod
+    async def get_json(self, key: str) -> dict[str, Any]: ...
+
+    @abstractmethod
+    async def store_str(self, key: str, value: str) -> None: ...
+
+    @abstractmethod
+    async def store_json(self, key: str, value: dict[str, Any]) -> None: ...
