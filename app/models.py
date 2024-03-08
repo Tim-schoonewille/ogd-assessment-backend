@@ -16,4 +16,10 @@ class EndpointResponse(CustomBase):
     detail: str
 
 
-from app.trailer.models import MovieData, CompactMovieData  # noqa
+from app.trailer.models import (  # noqa
+    MovieData,
+    CompactMovieData,
+    YoutubeID,
+    YoutubeTrailerData,
+    YoutubeTrailerDataSnippet,
+)

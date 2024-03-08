@@ -10,4 +10,5 @@ class IMovieDataProvider(ABC):
 
 
 class ITrailerProvider(ABC):
-    pass
+    @abstractmethod
+    async def search_multi_return_first(self, query: str): ...
