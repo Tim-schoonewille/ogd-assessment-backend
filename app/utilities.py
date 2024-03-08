@@ -17,7 +17,7 @@ class CacheProvider(ICacheProvider):
         self.cache_client = cache_client
         self.cache_expire = cache_expire
 
-    async def get_str(self, key: str) -> str:
+    async def get_str(self, key: str) -> str | None:
         """Returns a string from cache.
 
         Args:
@@ -27,9 +27,9 @@ class CacheProvider(ICacheProvider):
             str: The value associated with the cached entry.
         """
         value = await self.cache_client.get(name=key)
-        return value.decode()
+        return value.decode() if value else None
 
-    async def get_json(self, key: str) -> dict[str, Any]:
+    async def get_json(self, key: str) -> dict[str, Any] | None:
         """Returns a dictionary object represneting JSON data from cache.
 
         Args:
@@ -40,7 +40,7 @@ class CacheProvider(ICacheProvider):
         """
 
         value = await self.cache_client.get(name=key)
-        return json.loads(value)
+        return json.loads(value) if value else None
 
     async def store_str(self, key: str, value: str) -> None:
         """Store string data in cache.

@@ -19,7 +19,19 @@ class TrailerService:
         self._cache_provider = cache_provider
 
     async def search(self, query: str) -> models.TrailerResult:
-        pass
+        result_from_cache = await self._cache_provider.get_json(
+            key=f'{models.CachePrefixes.FULL_RESULT}{query}'
+        )
+        if result_from_cache is not None:
+            result_from_cache = models.TrailerResult(**result_from_cache)
+            result_from_cache.from_cache = True
+            return result_from_cache
+        movies_with_trailers = await self._search_movies_with_trailers(query=query)
+        await self._cache_provider.store_json(
+            key=f'{models.CachePrefixes.FULL_RESULT}{query}',
+            value=movies_with_trailers.model_dump(),
+        )
+        return movies_with_trailers
 
     async def _search_movies_with_trailers(self, query: str) -> models.TrailerResult:
         movies = await self._movie_provider.search_multi(query=query)

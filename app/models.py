@@ -24,6 +24,7 @@ from app.trailer.models import (  # noqa
     YoutubeTrailerDataSnippet,
     MovieDataWithTrailer,
     TrailerResult,
+    CachePrefixes,
 )
 
 MovieDataWithTrailer.model_rebuild()

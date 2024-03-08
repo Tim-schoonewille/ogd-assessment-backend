@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import Field
 from app import models
 
@@ -52,3 +53,7 @@ class MovieDataWithTrailer(MovieData):
 class TrailerResult(models.CustomBase):
     movies: list[MovieDataWithTrailer]
     from_cache: bool = Field(default=False)
+
+
+class CachePrefixes(str, Enum):
+    FULL_RESULT = 'full_result_'
