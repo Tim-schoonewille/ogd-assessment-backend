@@ -20,11 +20,11 @@ services:
   cache:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: /bin/sh -c "redis-server --requirepass REDIS_PASSWORD"
-    volumes:
-      - cache_volume:/data
+    # volumes:
+    #   - cache_volume:/data
 
 
-volumes:
-  cache_volume:
+# volumes:
+#   cache_volume:
