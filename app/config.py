@@ -24,6 +24,9 @@ class ConfigBase(BaseModel):
     REDIS_HOST: str = get_env('REDIS_HOST')
     REDIS_PASSWORD: str = get_env('REDIS_PASSWORD')
 
+    OMDB_API_KEY: str = get_env('OMDB_API_KEY')
+    OMDB_API_URL: str = 'http://www.omdbapi.com/'
+
 
 class DevConfig(ConfigBase):
     """Config for the development environment."""

@@ -14,3 +14,6 @@ class EndpointResponse(CustomBase):
     """Model for generic responses using the 'detail' key."""
 
     detail: str
+
+
+from app.trailer.models import MovieData, CompactMovieData  # noqa

@@ -1,11 +1,13 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class IMovieDataProvider(ABC):
-    pass
+    @abstractmethod
+    async def search_multi(self, query: str): ...
+
+    @abstractmethod
+    async def get_by_id(self, id: str): ...
 
 
 class ITrailerProvider(ABC):
     pass
-
-
