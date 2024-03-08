@@ -1,11 +1,11 @@
 from typing import Any
 
 from httpx import AsyncClient
-from app.config import ConfigBase, get_config
-from app.trailer.exceptions import OmdbApiError
-from app.trailer.interfaces import IMovieDataProvider
+from app.config import ConfigBase
+from app.trailer.exceptions import OmdbApiError, YoutubeApiError
+from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
 from app import models
-from app.trailer.models import MovieData
+from app.trailer.models import MovieData, YoutubeTrailerData
 
 
 class OMDBMovieDataProvider(IMovieDataProvider):
@@ -32,7 +32,8 @@ class OMDBMovieDataProvider(IMovieDataProvider):
         Returns:
             list[CompactMovieData] -- A list of pydantic models with data from api.
         """
-        async with AsyncClient() as c:
+        # TODO httpx is timing out for some reason.
+        async with AsyncClient(timeout=20) as c:
             params = {'apikey': self._api_key, 's': query.strip()}
             result = await c.get(self._api_base_url, params=params)
             if result.status_code not in [200, 201, 202, 203, 204]:
@@ -69,3 +70,51 @@ class OMDBMovieDataProvider(IMovieDataProvider):
     def _convert_single_to_object(self, data: dict[str, Any]) -> MovieData:
         """Converts the raw dictionary to a pydantic model."""
         return models.MovieData(**data)
+
+
+class YoutubeTrailerProvider(ITrailerProvider):
+    """
+    Provider object to get a trailer from the YouTube API.
+    api url: ('https://www.googleapis.com/youtube/v3/search')
+
+    Args:
+        config (ConfigBase) -- Global configuration object.
+    """
+
+    def __init__(self, config: ConfigBase) -> None:
+        self._config = config
+        self._api_key = config.YOUTUBE_API_KEY
+        self._api_base_url = config.YOUTUBE_API_URL
+
+    async def search_multi_return_first(self, title: str) -> YoutubeTrailerData:
+        """
+        Searches the Youtube API endpoint for a list of movie trailers.
+        The 'query' argument is stripped of any whitespace etc, and concatenated with
+        'trailer'.
+        Currently, returns the first value of the list.
+
+        Args:
+            query (str) -- This is the movie title.
+
+        Returns:
+            YoutubeTrailerData -- Pydantic model with some metadata, but the most
+            important value is: YoutubeTrailerData.id.videoId, for this is the
+            id of the trailer (add to: /watch?v={videoId})
+        """
+        params = {
+            'part': 'snippet',
+            'q': f'{title.strip()} trailer',
+            'key': self._api_key,
+        }
+        async with AsyncClient() as c:
+            result = await c.get(self._api_base_url, params=params)
+            if result.status_code not in [200, 201, 202, 203, 204, 205]:
+                raise YoutubeApiError(result.text)
+            data = result.json()
+        first_result = data['items'][0]
+        return self._convert_to_object(data=first_result)
+
+    def _convert_to_object(self, data: dict[str, Any]) -> YoutubeTrailerData:
+        "Converts the raw dictionary JSON representation to a pydantic model."
+        # TODO Test invalid input
+        return YoutubeTrailerData(**data)

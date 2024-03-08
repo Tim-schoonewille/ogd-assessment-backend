@@ -27,6 +27,9 @@ class ConfigBase(BaseModel):
     OMDB_API_KEY: str = get_env('OMDB_API_KEY')
     OMDB_API_URL: str = 'http://www.omdbapi.com/'
 
+    YOUTUBE_API_KEY: str = get_env('YOUTUBE_API_KEY')
+    YOUTUBE_API_URL: str = 'https://www.googleapis.com/youtube/v3/search'
+
 
 class DevConfig(ConfigBase):
     """Config for the development environment."""

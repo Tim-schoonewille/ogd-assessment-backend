@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import logging
+import os
 from fastapi import APIRouter, FastAPI
 
 from app.utilities import custom_generate_unique_id
@@ -17,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 def init_fastapi(testing: bool = False) -> FastAPI:
     server = FastAPI(
-        title='Movie Backend',
+        title=os.environ.get('APP_TITLE', 'backend'),
         version='0.1',
         lifespan=lifespan,
         generate_unique_id_function=custom_generate_unique_id,
