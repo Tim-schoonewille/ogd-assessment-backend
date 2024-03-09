@@ -71,7 +71,11 @@ class MockTrailerService(ITrailerService):
 
     async def search(self, query: str, network_lag: float = 1.5) -> TrailerResult:
         await asyncio.sleep(network_lag)
-        compact_movie_list = self.compact_movie_data_entries[query]
+        try:
+            compact_movie_list = self.compact_movie_data_entries[query]
+        except KeyError:
+            raise MovieNotFoundError('MOVIE_NOT_IN_MOCK_DATA')
+
         movies_with_trailer = [
             self.movie_data_with_trailer_entries[movie.imdbID]
             for movie in compact_movie_list

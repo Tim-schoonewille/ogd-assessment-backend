@@ -59,3 +59,7 @@ class CachePrefixes(str, Enum):
     FULL_RESULT = 'full_result_'
     COMPACT_MOVIE_DATA_LIST = 'compact_movie_data_list_'
     SINGLE_RESULT_BY_ID = 'single_result_by_id_'
+
+
+class TrailerSearchForm(models.CustomBase):
+    title: str
