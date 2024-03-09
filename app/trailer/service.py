@@ -1,11 +1,11 @@
 from app import models
 from app.config import ConfigBase
 from app.interfaces import ICacheProvider
-from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
+from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider, ITrailerService
 from app.trailer.models import TrailerResult
 
 
-class TrailerService:
+class TrailerService(ITrailerService):
     def __init__(
         self,
         config: ConfigBase,
