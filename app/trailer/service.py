@@ -57,7 +57,9 @@ class TrailerService(ITrailerService):
             return models.MovieDataWithTrailer(**movie_data_with_trailer_in_cache)
 
         movie_data = await self._movie_provider.get_by_id(_id=_id)
-        trailer_data = await self._trailer_provider.search_multi_return_first(title=title)
+        trailer_data = await self._trailer_provider.search_multi_return_first(
+            title=movie_data.Title
+        )
         movie_data.trailer_link = (
             f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
         )

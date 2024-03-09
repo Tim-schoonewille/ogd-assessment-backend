@@ -2,7 +2,7 @@ from typing import Any
 
 from httpx import AsyncClient
 from app.config import ConfigBase
-from app.trailer.exceptions import OmdbApiError, YoutubeApiError
+from app.trailer.exceptions import MovieNotFoundError, OmdbApiError, YoutubeApiError
 from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
 from app import models
 from app.trailer.models import MovieData, MovieDataWithTrailer, YoutubeTrailerData
@@ -39,8 +39,11 @@ class OMDBMovieDataProvider(IMovieDataProvider):
             if result.status_code not in [200, 201, 202, 203, 204]:
                 raise OmdbApiError('OMDB_API_ERROR: ', result.text)
             data = result.json()
-
-        return self._convert_multi_to_object(data=data['Search'])
+        try:
+            search_data = data['Search']
+        except KeyError:
+            raise MovieNotFoundError('MOVIE_NOT_FOUND')
+        return self._convert_multi_to_object(data=search_data)
 
     async def get_by_id(self, _id: str) -> models.MovieDataWithTrailer:
         """

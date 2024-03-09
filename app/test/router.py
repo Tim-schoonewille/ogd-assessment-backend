@@ -7,6 +7,7 @@ from redis import asyncio as aioredis
 from redis import Redis
 
 from app.config import ConfigBase, get_config
+from app.redis import GetAsyncCache
 
 router = APIRouter(prefix='/test', tags=['tests'])
 
@@ -22,6 +23,18 @@ def post_cache(k: str, v: str):
 
     redis.set(k, v, ex=3600)
     return True
+
+
+@router.post('/cache-set')
+async def set_cache(k: str, v: str, cache: GetAsyncCache):
+    await cache.set(k, v, ex=3600)
+    return True
+
+
+@router.get('/cache-get')
+async def get_cache(k: str, cache: GetAsyncCache):
+    v = await cache.get(k)
+    return {k: v.decode()}
 
 
 @router.get('/test-vimeo-tutorial')

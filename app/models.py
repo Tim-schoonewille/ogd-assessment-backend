@@ -25,6 +25,7 @@ from app.trailer.models import (  # noqa
     MovieDataWithTrailer,
     TrailerResult,
     CachePrefixes,
+    TrailerSearchForm,
 )
 
 MovieDataWithTrailer.model_rebuild()
