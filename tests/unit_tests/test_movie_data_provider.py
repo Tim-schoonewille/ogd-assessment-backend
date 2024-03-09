@@ -59,3 +59,16 @@ async def test_search_by_id():
 
 
 # TODO Test raise for status.
+
+
+# async def test_search_multi_for_output():
+#     provider = OMDBMovieDataProvider(config=get_config())
+
+#     QUERY = 'indiana jones'
+#     FILEPATH = './tests/data/trailer/search-indiana-jones.json'
+
+#     result = await provider.search_multi(query=QUERY)
+#     print('result from search multi:', result)
+
+#     with open(FILEPATH, 'w', encoding='utf-8') as f:
+#         f.write(json.dumps([movie.model_dump() for movie in result]))

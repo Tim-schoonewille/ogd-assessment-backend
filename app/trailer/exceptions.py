@@ -4,3 +4,11 @@ class OmdbApiError(Exception):
 
 class YoutubeApiError(Exception):
     pass
+
+
+class InvalidIMDBId(Exception):
+    pass
+
+
+class MovieNotFoundError(Exception):
+    pass
