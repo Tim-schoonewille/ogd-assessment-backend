@@ -30,6 +30,8 @@ class ConfigBase(BaseModel):
     YOUTUBE_API_KEY: str = get_env('YOUTUBE_API_KEY')
     YOUTUBE_API_URL: str = 'https://www.googleapis.com/youtube/v3/search'
 
+    VIMEO_API_KEY: str = '52ebb294f46e635ebec7be58d2723b5c'
+
 
 class DevConfig(ConfigBase):
     """Config for the development environment."""
