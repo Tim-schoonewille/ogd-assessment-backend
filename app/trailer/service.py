@@ -41,6 +41,8 @@ class TrailerService:
             trailer_data = await self._trailer_provider.search_multi_return_first(
                 title=movie_data.Title
             )
-            movie_data.trailer_id = trailer_data.id.videoId
+            movie_data.trailer_link = (
+                f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
+            )
             movies_with_trailer.append(movie_data)
         return TrailerResult(movies=movies_with_trailer, from_cache=False)

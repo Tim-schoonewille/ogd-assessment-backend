@@ -10,29 +10,31 @@ STARWARS_SEARCH_JSON_FILEPATH = './tests/data/trailer/search-star-wars.json'
 TRAILER_RESULT_FILEPATH = './tests/data/trailer/trailer-result-starwars.json'
 
 
-# async def test_trailer_service(
-#     trailer_service: TrailerService,
-# ) -> None:
-#     QUERY = 'star wars'
+async def test_trailer_service(
+    trailer_service: TrailerService,
+) -> None:
+    QUERY = 'star wars'
 
-#     with open(STARWARS_SEARCH_JSON_FILEPATH, 'r', encoding='utf-8') as f:
-#         data = json.loads(f.read())['Search']
+    with open(STARWARS_SEARCH_JSON_FILEPATH, 'r', encoding='utf-8') as f:
+        data = json.loads(f.read())['Search']
 
-#     result = await trailer_service._search_movies_with_trailers(query=QUERY)
+    result = await trailer_service._search_movies_with_trailers(query=QUERY)
 
-#     assert isinstance(result, models.TrailerResult)
-#     assert result.from_cache is False
+    assert isinstance(result, models.TrailerResult)
+    assert result.from_cache is False
 
-#     for movie in result.movies:
-#         print('movie title: ', movie.Title)
-#         link = f'https://www.youtube.com/watch?v={movie.trailer_id}'
-#         print('youtube link:', link)
+    for movie in result.movies:
+        print('movie title: ', movie.Title)
+        print('youtube link:', movie.trailer_link)
 
-#     for i, value in enumerate(data):
-#         assert value['Title'] == result.movies[i].Title
+    for i, value in enumerate(data):
+        assert value['Title'] == result.movies[i].Title
+
+    with open(TRAILER_RESULT_FILEPATH, 'w', encoding='utf-8') as f:
+        f.write(result.model_dump_json())
 
 
-async def test_trailer_service_pulp_fiction(
+async def test_trailer_service_test_result_is_cached(
     trailer_service: TrailerService, cache: AsyncRedis
 ) -> None:
     QUERY = 'under the silver lake'
@@ -45,8 +47,7 @@ async def test_trailer_service_pulp_fiction(
 
     for movie in result.movies:
         print('movie title: ', movie.Title)
-        link = f'https://www.youtube.com/watch?v={movie.trailer_id}'
-        print('youtube link:', link)
+        print('youtube link:', movie.trailer_link)
 
     result_in_cache_after = await cache.get(
         name=f'{models.CachePrefixes.FULL_RESULT}{QUERY}'

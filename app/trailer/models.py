@@ -47,7 +47,7 @@ class YoutubeTrailerData(models.CustomBase):
 
 
 class MovieDataWithTrailer(MovieData):
-    trailer_id: str | None = None
+    trailer_link: str | None = None
 
 
 class TrailerResult(models.CustomBase):
