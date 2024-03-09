@@ -5,7 +5,7 @@ from app.config import ConfigBase
 from app.trailer.exceptions import OmdbApiError, YoutubeApiError
 from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
 from app import models
-from app.trailer.models import MovieData, YoutubeTrailerData
+from app.trailer.models import MovieData, MovieDataWithTrailer, YoutubeTrailerData
 
 
 class OMDBMovieDataProvider(IMovieDataProvider):
@@ -42,7 +42,7 @@ class OMDBMovieDataProvider(IMovieDataProvider):
 
         return self._convert_multi_to_object(data=data['Search'])
 
-    async def get_by_id(self, _id: str) -> models.MovieData:
+    async def get_by_id(self, _id: str) -> models.MovieDataWithTrailer:
         """
         Search external API by imdb ID.
 
@@ -67,9 +67,9 @@ class OMDBMovieDataProvider(IMovieDataProvider):
         """Converts the raw list of dictionaries to pydantic models."""
         return [models.CompactMovieData(**movie_data) for movie_data in data]
 
-    def _convert_single_to_object(self, data: dict[str, Any]) -> MovieData:
+    def _convert_single_to_object(self, data: dict[str, Any]) -> MovieDataWithTrailer:
         """Converts the raw dictionary to a pydantic model."""
-        return models.MovieData(**data)
+        return models.MovieDataWithTrailer(**data)
 
 
 class YoutubeTrailerProvider(ITrailerProvider):

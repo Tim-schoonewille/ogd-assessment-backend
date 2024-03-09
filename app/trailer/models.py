@@ -1,3 +1,5 @@
+from enum import Enum
+from pydantic import Field
 from app import models
 
 
@@ -42,3 +44,16 @@ class YoutubeID(models.CustomBase):
 class YoutubeTrailerData(models.CustomBase):
     id: YoutubeID
     snippet: YoutubeTrailerDataSnippet
+
+
+class MovieDataWithTrailer(MovieData):
+    trailer_link: str | None = None
+
+
+class TrailerResult(models.CustomBase):
+    movies: list[MovieDataWithTrailer]
+    from_cache: bool = Field(default=False)
+
+
+class CachePrefixes(str, Enum):
+    FULL_RESULT = 'full_result_'

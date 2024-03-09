@@ -42,7 +42,7 @@ def test_convert_single_to_object():
         data = json.loads(f.read())
 
     result = provider._convert_single_to_object(data=data)
-    assert isinstance(result, models.MovieData)
+    assert isinstance(result, models.MovieDataWithTrailer)
 
 
 async def test_search_by_id():
