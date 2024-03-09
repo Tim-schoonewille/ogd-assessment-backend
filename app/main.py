@@ -35,6 +35,10 @@ def init_fastapi(testing: bool = False) -> FastAPI:
     api_v1.include_router(router=test_router)
     api_v1.include_router(router=trailer_router)
 
+    from app.trailer.router_v2 import router as v2_trailer_router
+
+    api_v2.include_router(v2_trailer_router)
+
     from app.trailer.mock_router import router as mock_trailer_router
 
     mock_v1.include_router(mock_trailer_router)

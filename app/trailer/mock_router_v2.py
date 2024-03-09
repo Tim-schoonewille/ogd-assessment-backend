@@ -3,18 +3,22 @@ from fastapi import APIRouter, HTTPException, status
 from app import models
 from app.trailer.dependencies import GetMockTrailerService
 from app.trailer.exceptions import InvalidIMDBId, MovieNotFoundError
+from app.trailer.models import CompactMovieData
+from tests.data.trailer.mock_utilities import MockMovies
 
 
 router = APIRouter(prefix='/trailer', tags=['mock-trailer-v2'])
 
 
-@router.post('/search')
+@router.post('/search', response_model=list[CompactMovieData])
 async def mock_search_movies_compact_endpoint(
-    body: models.TrailerSearchForm, service: GetMockTrailerService, network_lag: float = 1
+    title: MockMovies,
+    service: GetMockTrailerService,
+    network_lag: float = 1,
 ):
     try:
         compact_movie_data = await service.get_compact_movie_data_by_query(
-            query=body.title.strip(), network_lag=network_lag
+            query=title, network_lag=network_lag
         )
     except MovieNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -30,7 +34,7 @@ async def mock_search_movie_with_trailer_data_endpoint(
 ):
     try:
         movie_with_trailer_data = await service.get_movie_data_with_trailer_by_imdb_id(
-            _id=imdb_id, title=body.title.strip(), network_lag=network_lag
+            _id=imdb_id, title=body.title, network_lag=network_lag
         )
     except InvalidIMDBId as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

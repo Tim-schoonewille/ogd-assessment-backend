@@ -2,16 +2,16 @@ import json
 from httpx import AsyncClient
 
 
-async def test_search_endpoint(mock_v2_fastapi: AsyncClient) -> None:
+async def test_search_endpoint(trailer_v2_fastapi: AsyncClient) -> None:
     QUERY = 'lord of the rings'
     FILEPATH = './tests/data/trailer/search-lotr.json'
 
     with open(FILEPATH, 'r', encoding='utf-8') as file:
         data_from_file = json.loads(file.read())
 
-    params = {'network_lag': 0, 'title': QUERY}
+    body = {'title': QUERY}
 
-    r = await mock_v2_fastapi.post('/trailer/search', params=params)
+    r = await trailer_v2_fastapi.post('/trailer/search', json=body)
 
     assert r.status_code == 200
 
@@ -19,20 +19,22 @@ async def test_search_endpoint(mock_v2_fastapi: AsyncClient) -> None:
 
     for i, movie in enumerate(data_from_file):
         assert movie['Title'] == data[i]['title']
+        assert movie['Year'] == data[i]['year']
         assert movie['imdbID'] == data[i]['imdbid']
+        assert movie['Poster'] == data[i]['poster']
 
 
-async def test_search_endpoint_movie_not_found(mock_v2_fastapi: AsyncClient) -> None:
+async def test_search_endpoint_movie_not_found(trailer_v2_fastapi: AsyncClient) -> None:
     QUERY = 'the lord of the rings'
 
-    params = {'network_lag': 0, 'title': QUERY}
+    body = {'title': QUERY}
 
-    r = await mock_v2_fastapi.post('/trailer/search', params=params)
+    r = await trailer_v2_fastapi.post('/trailer/search', json=body)
 
-    assert r.status_code == 422
+    assert r.status_code == 404
 
 
-async def test_search_by_imdb_id_endpoint(mock_v2_fastapi: AsyncClient) -> None:
+async def test_search_by_imdb_id_endpoint(trailer_v2_fastapi: AsyncClient) -> None:
     FILEPATH_SEARCH = './tests/data/trailer/search-lotr.json'
     FILEPATH_RESULT = './tests/data/trailer/trailer-result-lotr.json'
 
@@ -46,7 +48,9 @@ async def test_search_by_imdb_id_endpoint(mock_v2_fastapi: AsyncClient) -> None:
     imdb_id = search_data[0]['imdbID']
     body = {'title': title}
     params = {'network_lag': 0}
-    r = await mock_v2_fastapi.post(f'/trailer/search/{imdb_id}', json=body, params=params)
+    r = await trailer_v2_fastapi.post(
+        f'/trailer/search/{imdb_id}', json=body, params=params
+    )
 
     assert r.status_code == 200
 
@@ -58,13 +62,15 @@ async def test_search_by_imdb_id_endpoint(mock_v2_fastapi: AsyncClient) -> None:
 
 
 async def test_search_by_imdb_id_endpoint_invalid_imdb_id(
-    mock_v2_fastapi: AsyncClient,
+    trailer_v2_fastapi: AsyncClient,
 ) -> None:
     title = 'fuck this shit'
     imdb_id = 'non-existent-imdb-id'
     body = {'title': title}
     params = {'network_lag': 0}
-    r = await mock_v2_fastapi.post(f'/trailer/search/{imdb_id}', json=body, params=params)
+    r = await trailer_v2_fastapi.post(
+        f'/trailer/search/{imdb_id}', json=body, params=params
+    )
 
     assert r.status_code == 404
     assert r.json()['detail'] == 'INVALID_IMDB_ID'

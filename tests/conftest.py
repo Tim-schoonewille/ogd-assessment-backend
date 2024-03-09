@@ -13,6 +13,7 @@ from app.utilities import CacheProvider
 from tests.data.trailer.mock_utilities import MockTrailerService
 
 V1_BASE_URL = 'http://localhost:8000/api/v1'
+V2_BASE_URL = 'http://localhost:8000/api/v2'
 MOCK_V1_BASE_URL = 'http://localhost:8000/mock/v1'
 MOCK_V2_BASE_URL = 'http://localhost:8000/mock/v2'
 
@@ -92,6 +93,25 @@ async def trailer_v1_fastapi(cache: AsyncRedis):
     async with AsyncClient(
         transport=ASGITransport(app),  # type: ignore
         base_url=V1_BASE_URL,
+        follow_redirects=True,
+    ) as c:
+        yield c
+
+
+@pytest_asyncio.fixture(scope='function')
+async def trailer_v2_fastapi(cache: AsyncRedis):
+    app = init_fastapi(testing=True)
+
+    def get_trailer_service_override() -> ITrailerService:
+        return MockTrailerService(
+            config=get_config(), cache_provider=CacheProvider(cache)
+        )
+
+    app.dependency_overrides[get_trailer_service] = get_trailer_service_override
+
+    async with AsyncClient(
+        transport=ASGITransport(app),  # type: ignore
+        base_url=V2_BASE_URL,
         follow_redirects=True,
     ) as c:
         yield c

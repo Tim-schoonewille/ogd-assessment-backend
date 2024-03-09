@@ -1,4 +1,5 @@
 import asyncio
+from enum import Enum
 import json
 from app import models
 from app.config import ConfigBase
@@ -11,6 +12,16 @@ from app.trailer.models import (
     TrailerResult,
     YoutubeTrailerData,
 )
+
+
+class MockMovies(str, Enum):
+    STAR_WARS = 'star wars'
+    LOTR = 'lord of the rings'
+    INDIANA_JONES = 'indiana jones'
+
+
+class MockTrailerSearchForm(models.CustomBase):
+    title: MockMovies
 
 
 # class MockMovieDataProvider(IMovieDataProvider):
@@ -69,7 +80,7 @@ class MockTrailerService(ITrailerService):
                 )
         return movie_data_with_trailer
 
-    async def search(self, query: str, network_lag: float = 1.5) -> TrailerResult:
+    async def search(self, query: str, network_lag: float = 0) -> TrailerResult:
         await asyncio.sleep(network_lag)
         try:
             compact_movie_list = self.compact_movie_data_entries[query]
@@ -83,7 +94,7 @@ class MockTrailerService(ITrailerService):
         return TrailerResult(movies=movies_with_trailer)
 
     async def get_movie_data_with_trailer_by_imdb_id(
-        self, _id: str, title: str, network_lag: float = 1.5
+        self, _id: str, title: str, network_lag: float = 0
     ) -> MovieDataWithTrailer:
         await asyncio.sleep(network_lag)
         try:
@@ -93,7 +104,7 @@ class MockTrailerService(ITrailerService):
         return movie_data_with_trailer
 
     async def get_compact_movie_data_by_query(
-        self, query: str, network_lag: float = 1.5
+        self, query: str, network_lag: float = 0
     ) -> list[CompactMovieData]:
         await asyncio.sleep(network_lag)
         try:
