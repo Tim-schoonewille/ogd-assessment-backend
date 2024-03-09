@@ -30,8 +30,8 @@ async def test_trailer_service(
     for i, value in enumerate(data):
         assert value['Title'] == result.movies[i].Title
 
-    with open(TRAILER_RESULT_FILEPATH, 'w', encoding='utf-8') as f:
-        f.write(result.model_dump_json())
+    # with open(TRAILER_RESULT_FILEPATH, 'w', encoding='utf-8') as f:
+    #     f.write(result.model_dump_json())
 
 
 async def test_trailer_service_test_result_is_cached(
@@ -69,3 +69,66 @@ async def test_get_trailer_result_from_cache(
 
     trailer_result = await trailer_service.search(query='star wars')
     assert trailer_result.from_cache is True
+
+
+async def test_get_movie_data_with_trailer_by_imdb_id(
+    trailer_service: TrailerService, cache: AsyncRedis
+) -> None:
+    with open(TRAILER_RESULT_FILEPATH, 'r', encoding='utf-8') as file:
+        data = json.loads(file.read())
+
+    first_result = data['movies'][0]
+
+    imdb_id = first_result['imdbID']
+    title = first_result['Title']
+
+    cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{imdb_id}'
+    movie_data_with_trailer_before = await cache.get(cache_key)
+    assert movie_data_with_trailer_before is None
+
+    movie_data_with_trailer = (
+        await trailer_service.get_movie_data_with_trailer_by_imdb_id(
+            _id=imdb_id, title=title
+        )
+    )
+    assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
+    for k in first_result:
+        if hasattr(movie_data_with_trailer, k):
+            assert first_result[k] == getattr(movie_data_with_trailer, k)
+
+    movie_data_with_trailer_after = json.loads(await cache.get(cache_key))
+    assert movie_data_with_trailer_after is not None
+    print(movie_data_with_trailer_after)
+    for k in first_result:
+        assert first_result[k] == movie_data_with_trailer_after[k]
+
+
+async def test_get_compact_movie_data_by_query(
+    trailer_service: TrailerService, cache: AsyncRedis
+) -> None:
+    QUERY = 'star wars'
+
+    cache_key = f'{models.CachePrefixes.COMPACT_MOVIE_DATA_LIST}{QUERY}'
+    data_in_cache_before = await cache.get(name=cache_key)
+    assert data_in_cache_before is None
+
+    with open(STARWARS_SEARCH_JSON_FILEPATH, 'r', encoding='utf-8') as f:
+        data = json.loads(f.read())
+
+    result = await trailer_service.get_compact_movie_data_by_query(query=QUERY)
+    for obj in result:
+        assert isinstance(obj, models.CompactMovieData)
+
+    for i, value in enumerate(data['Search']):
+        assert value['Title'] == result[i].Title
+        assert value['Year'] == result[i].Year
+        assert value['imdbID'] == result[i].imdbID
+        assert value['Type'] == result[i].Type
+
+    data_in_cache_after = json.loads(await cache.get(name=cache_key))
+    assert data_in_cache_after is not None
+    for i, value in enumerate(data_in_cache_after):
+        assert value['Title'] == result[i].Title
+        assert value['Year'] == result[i].Year
+        assert value['imdbID'] == result[i].imdbID
+        assert value['Type'] == result[i].Type
