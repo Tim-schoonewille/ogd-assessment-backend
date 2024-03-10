@@ -18,13 +18,14 @@ router = APIRouter(prefix='/trailer', tags=['trailer-service-v2'])
     V2 of the main business logic.
 
     V1 tends to get slow when the initial movie provider is queried for an overview
-    of the possible movies of given title query, thus resulting in a terrible user experience.
+    of the possible movies of given title query, thus resulting in a terrible user 
+    experience.
 
-    V2 aims to improve UX by seperating the initial request for imdb ID's and getting the data
-    for each individual result of said request.
+    V2 aims to improve UX by seperating the initial request for imdb ID's and getting the 
+    data for each individual result of said request.
 
-    Use this endpoint to get a list of movies with iMDB id's. After, use the ID in the other
-    endpoint to get a more detailed response. 
+    Use this endpoint to get a list of movies with iMDB id's. After, 
+    use the ID in the other endpoint to get a more detailed response. 
 
     Seperating these calls gives the user quicker results thus imporving UX.
 

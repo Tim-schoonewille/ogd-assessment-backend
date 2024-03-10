@@ -17,16 +17,17 @@ router = APIRouter(prefix='/trailer', tags=['mock-trailer-v1'])
     description="""
     The mock version of getting a trailer with meta data based on the given query (title).
 
-    All data resides in application memory and is not fetched from an external api or cache.
+    All data resides in application memory and is not fetched from an external api or 
+    cache.
 
     Currently only has three different query titles:
     - 'star wars'
     - 'lord of the rings'
     - 'indiana jones'
 
-    It has a query parameter 'network_lag: float' to simulate a long network request, since the
-    original version of this can take a long time to process. It defaults to 10.0 seconds,
-    but can be overwritten using the query parameter.
+    It has a query parameter 'network_lag: float' to simulate a long network request,
+    since the original version of this can take a long time to process. 
+    It defaults to 10.0 seconds, but can be overwritten using the query parameter.
     """,
     responses={
         status.HTTP_200_OK: {
