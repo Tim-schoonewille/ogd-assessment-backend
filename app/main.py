@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 import logging
 import os
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.utilities import custom_generate_unique_id
 
@@ -24,6 +25,15 @@ def init_fastapi(testing: bool = False) -> FastAPI:
         generate_unique_id_function=custom_generate_unique_id,
     )
 
+    origins = ['http://localhost', 'http://localhost:3000', 'http://localhost:5500']
+    server.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*'],
+    )
+
     api_v1 = APIRouter(prefix='/api/v1')
     mock_v1 = APIRouter(prefix='/mock/v1')
     api_v2 = APIRouter(prefix='/api/v2')
@@ -32,7 +42,7 @@ def init_fastapi(testing: bool = False) -> FastAPI:
     from app.test.router import router as test_router
     from app.trailer.router import router as trailer_router
 
-    api_v1.include_router(router=test_router)
+    # api_v1.include_router(router=test_router)
     api_v1.include_router(router=trailer_router)
 
     from app.trailer.router_v2 import router as v2_trailer_router
