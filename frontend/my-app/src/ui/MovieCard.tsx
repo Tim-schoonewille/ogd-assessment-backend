@@ -1,10 +1,13 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
 import { MovieDataWithTrailer } from "../types";
+import { useState } from "react";
+import { IoMdShare, IoMdVideocam } from "react-icons/io";
 
 interface movieCardProps {
   movie: MovieDataWithTrailer;
 }
 const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
+  const [showTrailer, setShowTrailer] = useState(false);
   return (
     <Flex>
       <Image src={movie.poster} alt={movie.title} width="150px" />
@@ -38,20 +41,42 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
           <Text mt="2" color="gray.600" fontSize="sm">
             IMDb Rating: {movie.imdbrating}
           </Text>
-          <Text mt="2" color="gray.600" fontSize="sm">
-            Traier link: {movie.trailerLink}
-          </Text>
+          <Flex gap={2}>
+            <Button
+              leftIcon={<IoMdVideocam />}
+              mt={3}
+              size={"xs"}
+              colorScheme="teal"
+              variant={showTrailer ? "outline" : "solid"}
+              onClick={() => setShowTrailer(!showTrailer)}
+            >
+              {showTrailer ? "Hide" : "Show"} Trailer
+            </Button>
+            <Button
+              leftIcon={<IoMdShare />}
+              mt={3}
+              size={"xs"}
+              colorScheme="teal"
+              variant="solid"
+              onClick={() => setShowTrailer(!showTrailer)}
+            >
+              Share
+            </Button>
+          </Flex>
         </Box>
       </Box>
-      <Box>
-        <iframe
-          width="350"
-          height="300"
-          src={movie.trailerLink}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        ></iframe>
-      </Box>
+      {showTrailer && (
+        <Box>
+          <iframe
+            width="350"
+            height="280"
+            src={movie.trailerLink}
+            title="YouTube video player"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          ></iframe>
+        </Box>
+      )}
     </Flex>
   );
 };

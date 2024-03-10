@@ -39,6 +39,7 @@ export default function SearchMockV2() {
   const [moviesWithTrailer, setMoviesWithTrailer] = useState<
     MovieDataWithTrailer[]
   >([]);
+  const [error, setError] = useState("");
 
   async function searchMovies(query: string) {
     setCompactMovieData([]);
@@ -47,33 +48,37 @@ export default function SearchMockV2() {
 
     try {
       setIsLoading(true);
-      const response = await fetch(`${URL}?title=${query}&network_lag=1`, {
+      const response = await fetch(`${URL}?title=${query}&network_lag=0`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ title: query }),
       });
+      if (response.ok) {
+        const data = await response.json();
+        setCompactMovieData(data);
 
-      const data = await response.json();
-      setCompactMovieData(data);
+        const dataArray = [];
 
-      const dataArray = [];
+        for (const movie of data) {
+          const response = await fetch(
+            `${URL}/${movie.imdbid}?network_lag=1.2`,
+            {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify({ title: movie.title }),
+            }
+          );
 
-      for (const movie of data) {
-        const response = await fetch(`${URL}/${movie.imdbid}?network_lag=3.2`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({ title: movie.title }),
-        });
-
-        const result = await response.json();
-        dataArray.push(result);
-        console.log("result is", result);
-        console.log("array is now: ", dataArray);
-        setMoviesWithTrailer([...dataArray]);
+          const result = await response.json();
+          dataArray.push(result);
+          console.log("result is", result);
+          console.log("array is now: ", dataArray);
+          setMoviesWithTrailer([...dataArray]);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -116,11 +121,14 @@ export default function SearchMockV2() {
         {/* <MovieCardWithImage movie={dummyMovie} /> */}
         {isLoading && (
           <Center>
-            <Spinner />
+            {/* <Spinner size={"xl"} /> */}
             <Stack>
-              <Skeleton height="20px" />
-              <Skeleton height="20px" />
-              <Skeleton height="20px" />
+              <Skeleton width="600px" height="20px" />
+              <Skeleton width="600px" height="20px" />
+              <Skeleton width="600px" height="20px" />
+              <Skeleton width="600px" height="20px" />
+              <Skeleton width="600px" height="20px" />
+              <Skeleton width="600px" height="20px" />
             </Stack>
           </Center>
         )}

@@ -26,7 +26,9 @@ async def get_trailer_service(config: GetConfig, cache: GetAsyncCache) -> ITrail
     """
     movie_provider = OMDBMovieDataProvider(config=config)
     trailer_provider = YoutubeTrailerProvider(config=config)
-    cache_provider = CacheProvider(cache_client=cache)
+    cache_provider = CacheProvider(
+        cache_client=cache, cache_expire=config.CACHE_EXPIRATION
+    )
     service = TrailerService(
         config=config,
         movie_provider=movie_provider,
@@ -49,7 +51,9 @@ async def get_mock_trailer_service(
     Returns:
         TrailerService: A Fully instantiated TrailserService object.
     """
-    cache_provider = CacheProvider(cache_client=cache)
+    cache_provider = CacheProvider(
+        cache_client=cache, cache_expire=config.CACHE_EXPIRATION
+    )
     service = MockTrailerService(
         config=config,
         cache_provider=cache_provider,
