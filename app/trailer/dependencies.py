@@ -11,6 +11,19 @@ from tests.data.trailer.mock_utilities import MockTrailerService
 
 
 async def get_trailer_service(config: GetConfig, cache: GetAsyncCache) -> ITrailerService:
+    """
+    Dependency for FastAPI endpoints.
+    Creates the TrailerService object with dependencies inserted.
+
+    It's dependencies are: MovieProvider, TrailerProvider, CacheProvider, ConfigBase
+
+    Args:
+        config (ConfigBase): Configuration object.
+        cache (AsyncRedis): The Asynchronous redis client.
+
+    Returns:
+        TrailerService: A Fully instantiated TrailserService object.
+    """
     movie_provider = OMDBMovieDataProvider(config=config)
     trailer_provider = YoutubeTrailerProvider(config=config)
     cache_provider = CacheProvider(cache_client=cache)
@@ -26,6 +39,16 @@ async def get_trailer_service(config: GetConfig, cache: GetAsyncCache) -> ITrail
 async def get_mock_trailer_service(
     config: GetConfig, cache: GetAsyncCache
 ) -> MockTrailerService:
+    """
+    Returns a mock version of the TrailerService object for FastAPI endpoints.
+
+    Args:
+        config (ConfigBase): Configuration object.
+        cache (AsyncRedis): The Asynchronous redis client.
+
+    Returns:
+        TrailerService: A Fully instantiated TrailserService object.
+    """
     cache_provider = CacheProvider(cache_client=cache)
     service = MockTrailerService(
         config=config,

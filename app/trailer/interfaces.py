@@ -4,6 +4,8 @@ from app import models
 
 
 class IMovieDataProvider(ABC):
+    """Interface for movie provider classes."""
+
     @abstractmethod
     async def search_multi(self, query: str) -> list[models.CompactMovieData]: ...
 
@@ -12,6 +14,8 @@ class IMovieDataProvider(ABC):
 
 
 class ITrailerProvider(ABC):
+    """Interface for trailer provider classes."""
+
     @abstractmethod
     async def search_multi_return_first(
         self, title: str
@@ -19,6 +23,8 @@ class ITrailerProvider(ABC):
 
 
 class ITrailerService(ABC):
+    """Interface for trailer service classes."""
+
     @abstractmethod
     async def search(self, query: str) -> models.TrailerResult: ...
 
