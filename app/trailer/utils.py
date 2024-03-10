@@ -5,7 +5,7 @@ from app.config import ConfigBase
 from app.trailer.exceptions import MovieNotFoundError, OmdbApiError, YoutubeApiError
 from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
 from app import models
-from app.trailer.models import MovieData, MovieDataWithTrailer, YoutubeTrailerData
+from app.trailer.models import MovieDataWithTrailer, YoutubeTrailerData
 
 
 class OMDBMovieDataProvider(IMovieDataProvider):

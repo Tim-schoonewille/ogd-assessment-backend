@@ -16,6 +16,12 @@ class EndpointResponse(CustomBase):
     detail: str
 
 
+class HttpError(CustomBase):
+    """Model when a HTTP Exception occurs."""
+
+    detail: str
+
+
 from app.trailer.models import (  # noqa
     MovieData,
     CompactMovieData,
