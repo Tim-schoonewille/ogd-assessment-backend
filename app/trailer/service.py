@@ -153,7 +153,7 @@ class TrailerService(ITrailerService):
             title=movie_data.Title
         )
         movie_data.trailer_link = (
-            f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
+            f'https://www.youtube.com/embed/{trailer_data.id.videoId}'
         )
 
         await self._cache_provider.store_json(
