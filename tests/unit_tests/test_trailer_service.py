@@ -146,3 +146,31 @@ async def test_get_compact_movie_data_by_query(
 #         f.write(result.model_dump_json())
 
 #     assert 1 == 0
+
+
+async def test_validate_cached_compact_movie_data(trailer_service: TrailerService):
+    mock_result_from_cache = [
+        {
+            'Title': 'test',
+            'Year': '1991',
+            'imdbID': 'tt_test_id',
+            'Type': 'test',
+            'Poster': 'poster',
+        }
+        for _ in range(0, 10)
+    ]
+
+    assert trailer_service._validate_cached_compact_movie_data(
+        list_compact_movie_data=mock_result_from_cache
+    )
+
+
+async def test_validate_cached_movie_data_with_trailer(
+    trailer_service: TrailerService,
+) -> None:
+    with open(TRAILER_RESULT_FILEPATH, 'r', encoding='utf-8') as f:
+        mock_data_from_cache = (json.loads(f.read()))['movies'][0]
+
+    assert trailer_service._validate_cached_movie_data_with_trailer(
+        movie_data_with_trailer=mock_data_from_cache
+    )

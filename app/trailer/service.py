@@ -1,3 +1,4 @@
+from typing import Any
 from app import models
 from app.config import ConfigBase
 from app.interfaces import ICacheProvider
@@ -148,7 +149,9 @@ class TrailerService(ITrailerService):
         cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{_id}'
         movie_data_with_trailer_in_cache = await self._cache_provider.get_json(cache_key)
 
-        if movie_data_with_trailer_in_cache:
+        if self._validate_cached_movie_data_with_trailer(
+            movie_data_with_trailer_in_cache  # type: ignore
+        ):
             return models.MovieDataWithTrailer(**movie_data_with_trailer_in_cache)  # type: ignore
 
         movie_data = await self._movie_provider.get_by_id(_id=_id)
@@ -193,7 +196,7 @@ class TrailerService(ITrailerService):
         cache_key = f'{models.CachePrefixes.COMPACT_MOVIE_DATA_LIST}{query}'
         compact_movie_data_in_cache = await self._cache_provider.get_json(cache_key)
 
-        if compact_movie_data_in_cache:
+        if self._validate_cached_compact_movie_data(compact_movie_data_in_cache):  # type: ignore
             compact_movie_data_list = [
                 models.CompactMovieData(**movie_data)
                 for movie_data in compact_movie_data_in_cache
@@ -207,3 +210,28 @@ class TrailerService(ITrailerService):
             value=[movie_data.model_dump() for movie_data in compact_movie_data_list],
         )
         return compact_movie_data_list
+
+    def _validate_cached_compact_movie_data(
+        self, list_compact_movie_data: list[dict[str, Any]] | None
+    ) -> bool:
+        if list_compact_movie_data is None:
+            return False
+        for compact_movie_data in list_compact_movie_data:
+            keys_in_compact_movie_data = compact_movie_data.keys()
+            keys_in_model = models.CompactMovieData.__annotations__.keys()
+            if keys_in_compact_movie_data != keys_in_model:
+                return False
+        return True
+
+    def _validate_cached_movie_data_with_trailer(
+        self, movie_data_with_trailer: dict[str, Any] | None
+    ) -> bool:
+        if movie_data_with_trailer is None:
+            return False
+        keys_in_movie_data_with_trailer = list(movie_data_with_trailer.keys())
+        keys_in_model = list(models.MovieData.__annotations__.keys()) + list(
+            models.MovieDataWithTrailer.__annotations__.keys()
+        )
+        print(keys_in_movie_data_with_trailer)
+        print(keys_in_model)
+        return keys_in_movie_data_with_trailer == keys_in_model
