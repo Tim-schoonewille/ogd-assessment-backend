@@ -23,10 +23,6 @@ async def test_trailer_service(
     assert isinstance(result, models.TrailerResult)
     assert result.from_cache is False
 
-    for movie in result.movies:
-        print('movie title: ', movie.Title)
-        print('youtube link:', movie.trailer_link)
-
     for i, value in enumerate(data):
         assert value['Title'] == result.movies[i].Title
 
@@ -44,10 +40,6 @@ async def test_trailer_service_test_result_is_cached(
     assert result_in_cache_before is None
 
     result = await trailer_service.search(query=QUERY)
-
-    for movie in result.movies:
-        print('movie title: ', movie.Title)
-        print('youtube link:', movie.trailer_link)
 
     result_in_cache_after = await cache.get(
         name=f'{models.CachePrefixes.FULL_RESULT}{QUERY}'
@@ -93,6 +85,7 @@ async def test_get_movie_data_with_trailer_by_imdb_id(
     )
     assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
     for k in first_result:
+        print(k)
         if hasattr(movie_data_with_trailer, k):
             assert first_result[k] == getattr(movie_data_with_trailer, k)
 

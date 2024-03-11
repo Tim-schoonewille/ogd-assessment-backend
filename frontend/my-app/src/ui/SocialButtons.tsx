@@ -15,33 +15,43 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
+import { MovieDataWithTrailer } from "../types";
 
 type SocialButtonsProps = {
-  link: string;
+  movie: MovieDataWithTrailer;
 };
-export default function SocialButtons({ link }: SocialButtonsProps) {
+export default function SocialButtons({ movie }: SocialButtonsProps) {
+  const roundness = 10;
   return (
-    <Flex gap="1">
-      <EmailShareButton url={link}>
-        <Icon as={EmailIcon} />
+    <Flex gap="2">
+      <EmailShareButton url={movie.trailerLink}>
+        <Icon
+          as={EmailIcon}
+          rounded={roundness}
+          _hover={{ cursor: "pointer", transform: "translateY(-2px)" }}
+        />
       </EmailShareButton>
-      <WhatsappShareButton url={link}>
-        <Icon as={WhatsappIcon} />
+      <WhatsappShareButton
+        title={`${movie.title} trailer`}
+        url={movie.trailerLink}
+      >
+        <Icon as={WhatsappIcon} rounded={roundness} />
       </WhatsappShareButton>
-      <FacebookShareButton url={link}>
-        <Icon as={FacebookIcon} />
+      <FacebookShareButton url={movie.trailerLink}>
+        <Icon as={FacebookIcon} rounded={roundness} />
       </FacebookShareButton>
-      <TwitterShareButton url={link}>
-        <Icon as={TwitterIcon} />
+      <TwitterShareButton url={movie.trailerLink}>
+        <Icon as={TwitterIcon} rounded={roundness} />
       </TwitterShareButton>
-      <LinkedinShareButton url={link}>
-        <Icon as={LinkedinIcon} />
+      <LinkedinShareButton url={movie.trailerLink}>
+        <Icon as={LinkedinIcon} rounded={roundness} />
       </LinkedinShareButton>
-      <RedditShareButton url={link}>
-        <Icon as={RedditIcon} />
+
+      <RedditShareButton url={movie.trailerLink}>
+        <Icon as={RedditIcon} rounded={roundness} />
       </RedditShareButton>
-      <TelegramShareButton url={link}>
-        <Icon as={TelegramIcon} />
+      <TelegramShareButton url={movie.trailerLink}>
+        <Icon as={TelegramIcon} rounded={roundness} />
       </TelegramShareButton>
     </Flex>
   );

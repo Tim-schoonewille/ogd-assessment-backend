@@ -56,7 +56,13 @@ async def test_get_movie_data_with_trailer_by_imdb_id(cache: AsyncRedis) -> None
     assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
     assert movie_data_with_trailer.Title == title
     assert movie_data_with_trailer.trailer_link
-    assert movie_data_with_trailer.trailer_link.startswith('https://')
+    assert movie_data_with_trailer.trailer_link.startswith(
+        'https://www.youtube.com/watch?v='
+    )
+    assert movie_data_with_trailer.trailer_embed_link
+    assert movie_data_with_trailer.trailer_embed_link.startswith(
+        'https://www.youtube.com/embed/'
+    )
     assert movie_data_with_trailer.imdbID == imdb_id
 
 

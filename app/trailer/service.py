@@ -110,6 +110,9 @@ class TrailerService(ITrailerService):
             movie_data.trailer_link = (
                 f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
             )
+            movie_data.trailer_embed_link = (
+                f'https://wwww.youtube.com/embed/{trailer_data.id.videoId}'
+            )
             movies_with_trailer.append(movie_data)
         return TrailerResult(movies=movies_with_trailer, from_cache=False)
 
@@ -153,6 +156,9 @@ class TrailerService(ITrailerService):
             title=movie_data.Title
         )
         movie_data.trailer_link = (
+            f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
+        )
+        movie_data.trailer_embed_link = (
             f'https://www.youtube.com/embed/{trailer_data.id.videoId}'
         )
 

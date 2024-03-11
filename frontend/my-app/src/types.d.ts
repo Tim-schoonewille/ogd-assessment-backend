@@ -19,4 +19,5 @@ export type MovieDataWithTrailer = {
   imdbrating: string;
   imdbid: string;
   trailerLink: string;
+  trailerEmbedLink: string;
 };

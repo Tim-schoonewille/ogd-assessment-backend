@@ -63,6 +63,7 @@ class MovieDataWithTrailer(MovieData):
     """
 
     trailer_link: str | None = None
+    trailer_embed_link: str | None = None
 
 
 class TrailerResult(models.CustomBase):

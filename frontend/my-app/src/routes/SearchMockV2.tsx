@@ -5,6 +5,7 @@ import {
   Flex,
   HStack,
   Heading,
+  Icon,
   Input,
   Skeleton,
   Spinner,
@@ -14,22 +15,8 @@ import {
 import MovieCardWithImage from "../ui/MovieCard";
 import { CompactMovieData, MovieDataWithTrailer } from "../types";
 import { FormEvent, useState } from "react";
+import { BiCameraMovie } from "react-icons/bi";
 
-const dummyMovie: MovieDataWithTrailer = {
-  title: "Star Wars: Episode IV - A New Hope",
-  year: "1977",
-  rated: "PG",
-  released: "25 may 1977",
-  runtime: "121 min",
-  genre: "Action, Fantasy",
-  director: "George Lucas",
-  plot: "rofl",
-  poster:
-    "https://m.media-amazon.com/images/M/MV5BOTA5NjhiOTAtZWM0ZC00MWNhLThiMzEtZDFkOTk2OTU1ZDJkXkEyXkFqcGdeQXVyMTA4NDI1NTQx._V1_SX300.jpg",
-  imdbrating: "8.6",
-  imdbid: "tt123341232",
-  trailerLink: "https://www.youtube.com/watch?v=vZ734NWnAHA",
-};
 export default function SearchMockV2() {
   const [title, setTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +81,12 @@ export default function SearchMockV2() {
         alignItems="center"
         flexDirection="column"
       >
-        <Heading mb={4}>Search Trailers</Heading>
+        <Flex>
+          <Heading>
+            <Icon mr={3} as={BiCameraMovie} />
+          </Heading>
+          <Heading mb={4}>Search Trailers</Heading>
+        </Flex>
         <Flex
           as="form"
           width="50%"

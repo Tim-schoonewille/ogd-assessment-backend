@@ -32,36 +32,51 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex>
-      <Image src={movie.poster} alt={movie.title} width="150px" />
-      <Box maxW="md" borderWidth="1px" borderRadius="lg" overflow="hidden">
+      <Image
+        src={movie.poster}
+        alt={movie.title}
+        width="150px"
+        height="250px"
+        mr={5}
+      />
+      <Box
+        maxW="l"
+        width="600px"
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="hidden"
+      >
         <Box p="6">
           <Box display="flex" alignItems="baseline">
             <Text fontWeight="semibold" fontSize="lg">
               {movie.title} ({movie.year})
             </Text>
             <Text ml="2" color="gray.500" fontSize="sm">
-              Rated: {movie.rated}
+              {movie.rated}
             </Text>
           </Box>
 
           <Text mt="2" color="gray.600" fontSize="sm">
-            Genre: {movie.genre}
+            <span style={{ fontWeight: "bold" }}>Genre:</span> {movie.genre}
           </Text>
 
           <Text mt="2" color="gray.600" fontSize="sm">
-            Director: {movie.director}
+            <span style={{ fontWeight: "bold" }}>Director:</span>{" "}
+            {movie.director}
           </Text>
 
           <Text mt="2" color="gray.600" fontSize="sm">
-            Runtime: {movie.runtime}
+            <span style={{ fontWeight: "bold" }}>Runtime:</span> {movie.runtime}
           </Text>
 
           <Text mt="2" color="gray.600" fontSize="sm">
-            Released: {movie.released}
+            <span style={{ fontWeight: "bold" }}>Released:</span>{" "}
+            {movie.released}
           </Text>
 
           <Text mt="2" color="gray.600" fontSize="sm">
-            IMDb Rating: {movie.imdbrating}
+            <span style={{ fontWeight: "bold" }}>IMDb Rating:</span>{" "}
+            {movie.imdbrating}
           </Text>
           <Flex gap={2}>
             <Button
@@ -74,7 +89,7 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
             >
               {showTrailer ? "Hide" : "Show"} Trailer
             </Button>
-            <Button
+            {/* <Button
               leftIcon={<IoMdShare />}
               mt={3}
               size={"xs"}
@@ -83,7 +98,7 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
               onClick={onOpen}
             >
               Share
-            </Button>
+            </Button> */}
             <Modal
               isCentered
               onClose={onClose}
@@ -99,7 +114,7 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
                 <ModalHeader>Share on social!</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                  <SocialButtons link={movie.trailerLink} />
+                  <SocialButtons movie={movie} />
                 </ModalBody>
                 <ModalFooter>
                   <Button size="xs" colorScheme="red" mr={3} onClick={onClose}>
@@ -109,14 +124,17 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
               </ModalContent>
             </Modal>
           </Flex>
+          <Box mt={2}>
+            <SocialButtons movie={movie} />
+          </Box>
         </Box>
       </Box>
       {showTrailer && (
         <Box>
           <iframe
-            width="350"
+            width="450"
             height="280"
-            src={movie.trailerLink}
+            src={movie.trailerEmbedLink}
             title="YouTube video player"
             allowFullScreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
