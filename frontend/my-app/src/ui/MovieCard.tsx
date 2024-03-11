@@ -1,13 +1,35 @@
-import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { MovieDataWithTrailer } from "../types";
 import { useState } from "react";
 import { IoMdShare, IoMdVideocam } from "react-icons/io";
-
+import {
+  EmailIcon,
+  EmailShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import SocialButtons from "./SocialButtons";
 interface movieCardProps {
   movie: MovieDataWithTrailer;
 }
+
 const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
   const [showTrailer, setShowTrailer] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex>
       <Image src={movie.poster} alt={movie.title} width="150px" />
@@ -58,10 +80,34 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
               size={"xs"}
               colorScheme="teal"
               variant="solid"
-              onClick={() => setShowTrailer(!showTrailer)}
+              onClick={onOpen}
             >
               Share
             </Button>
+            <Modal
+              isCentered
+              onClose={onClose}
+              isOpen={isOpen}
+              motionPreset="slideInBottom"
+              size="xs"
+            >
+              <ModalOverlay
+                bg="blackAlpha.300"
+                backdropFilter="blur(10px) hue-rotate(90deg)"
+              />
+              <ModalContent>
+                <ModalHeader>Share on social!</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <SocialButtons link={movie.trailerLink} />
+                </ModalBody>
+                <ModalFooter>
+                  <Button size="xs" colorScheme="red" mr={3} onClick={onClose}>
+                    Close
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Flex>
         </Box>
       </Box>

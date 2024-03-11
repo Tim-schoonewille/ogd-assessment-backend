@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import MovieCardWithImage from "../ui/MovieCard";
 import { CompactMovieData, MovieDataWithTrailer } from "../types";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 const dummyMovie: MovieDataWithTrailer = {
   title: "Star Wars: Episode IV - A New Hope",
@@ -63,7 +63,7 @@ export default function SearchMockV2() {
 
         for (const movie of data) {
           const response = await fetch(
-            `${URL}/${movie.imdbid}?network_lag=1.2`,
+            `${URL}/${movie.imdbid}?network_lag=0.3`,
             {
               method: "POST",
               headers: {
@@ -88,37 +88,49 @@ export default function SearchMockV2() {
   }
 
   return (
-    <Flex
-      height="100vh"
-      justifyContent="flex-start"
-      alignItems="center"
-      flexDirection="column"
-    >
-      <Heading mb={4}>Search Trailers</Heading>
-      <Flex width="50%" mb={10}>
-        <Input
-          placeholder="Enter your search term"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          flex="1"
-          mr={2}
-        />
-        <Button onClick={() => searchMovies(title)} colorScheme="teal">
-          Search
-        </Button>
+    <>
+      <Flex
+        justifyContent="flex-start"
+        alignItems="center"
+        flexDirection="column"
+      >
+        <Heading mb={4}>Search Trailers</Heading>
+        <Flex
+          as="form"
+          width="50%"
+          mb={10}
+          onSubmit={(e) => {
+            e.preventDefault();
+            searchMovies(title);
+          }}
+        >
+          <Input
+            placeholder="Enter your search term"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            flex="1"
+            mr={2}
+          />
+          <Button type="submit" colorScheme="teal">
+            Search
+          </Button>
+        </Flex>
       </Flex>
-      <Flex flexDir={"column"} gap={5}>
+      <Flex
+        flexDir={"column"}
+        gap={5}
+        alignItems={"center"}
+        flexDirection="column"
+      >
         {moviesWithTrailer &&
           moviesWithTrailer.map((movie) => {
             return (
               <>
                 <MovieCardWithImage movie={movie} />
-                <Divider height={10} colorScheme="teal" />
+                <Divider height={2} w="600px" colorScheme="teal" />
               </>
             );
           })}
-        {/* <MovieCardWithImage movie={dummyMovie} /> */}
-        {/* <MovieCardWithImage movie={dummyMovie} /> */}
         {isLoading && (
           <Center>
             {/* <Spinner size={"xl"} /> */}
@@ -133,7 +145,7 @@ export default function SearchMockV2() {
           </Center>
         )}
       </Flex>
-    </Flex>
+    </>
   );
 }
 
