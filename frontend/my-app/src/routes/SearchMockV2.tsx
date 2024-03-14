@@ -11,7 +11,9 @@ import {
   Skeleton,
   Spinner,
   Stack,
+  Text,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import MovieCardWithImage from "../ui/MovieCard";
 import { CompactMovieData, MovieDataWithTrailer } from "../types";
@@ -20,6 +22,7 @@ import { BiCameraMovie } from "react-icons/bi";
 
 export default function SearchMockV2() {
   const [title, setTitle] = useState("");
+  const [networkLag, setNetworkLag] = useState("1.2");
   const [isLoading, setIsLoading] = useState(false);
   const [compactMovieData, setCompactMovieData] = useState<CompactMovieData[]>(
     []
@@ -27,22 +30,26 @@ export default function SearchMockV2() {
   const [moviesWithTrailer, setMoviesWithTrailer] = useState<
     MovieDataWithTrailer[]
   >([]);
-  const [error, setError] = useState("");
+  const [errorData, setErrorData] = useState("");
+  const toast = useToast();
 
   async function searchMovies(query: string) {
     setCompactMovieData([]);
-    setCompactMovieData([]);
-    const URL = "http://localhost:8000/api/v2/trailer/search";
+    setMoviesWithTrailer([]);
+    const URL = "http://localhost:8000/mock/v2/trailer/search";
 
     try {
       setIsLoading(true);
-      const response = await fetch(`${URL}?title=${query}&network_lag=0`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: query }),
-      });
+      const response = await fetch(
+        `${URL}?title=${query}&network_lag=${networkLag}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: query }),
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setCompactMovieData(data);
@@ -51,7 +58,7 @@ export default function SearchMockV2() {
 
         for (const movie of data) {
           const response = await fetch(
-            `${URL}/${movie.imdbid}?network_lag=0.3`,
+            `${URL}/${movie.imdbid}?network_lag=${networkLag}`,
             {
               method: "POST",
               headers: {
@@ -60,18 +67,32 @@ export default function SearchMockV2() {
               body: JSON.stringify({ title: movie.title }),
             }
           );
+          if (response.ok) {
+            const result = await response.json();
 
-          const result = await response.json();
-          dataArray.push(result);
-          console.log("result is", result);
-          console.log("array is now: ", dataArray);
-          setMoviesWithTrailer([...dataArray]);
+            dataArray.push(result);
+            setMoviesWithTrailer([...dataArray]);
+          } else {
+            setErrorData("Error fetching data..");
+            console.log("error data: ", errorData);
+          }
         }
+      }
+      if (errorData) {
+        toast({
+          title: "Error fetching data!",
+          description: "Movie not found!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoading(false);
+      setErrorData("");
+      console.log("error", errorData);
     }
   }
 
@@ -86,7 +107,26 @@ export default function SearchMockV2() {
           <Heading>
             <Icon mr={3} as={BiCameraMovie} />
           </Heading>
-          <Heading mb={4}>Search Trailers</Heading>
+          <Heading mb={4}>Search Trailers (mock) </Heading>
+        </Flex>
+        <Flex mb={4}>
+          <Text>
+            Available movies in mock: star wars, indiana jones, lord of the
+            rings
+          </Text>
+        </Flex>
+        <Flex gap={5} mb={3} alignItems={"center"}>
+          <Text>Simulate network lag in seconds: </Text>
+          <Input
+            type="text"
+            width="40px"
+            variant="flushed"
+            placeholder="1.2"
+            flex="1"
+            value={networkLag}
+            onChange={(e) => setNetworkLag(e.target.value)}
+            colorScheme="teal"
+          />
         </Flex>
         <Flex
           as="form"
@@ -122,24 +162,33 @@ export default function SearchMockV2() {
             }
             return (
               <>
-                <ScaleFade initialScale={0.3} in={true}>
-                  <MovieCardWithImage movie={movie} />
+                <ScaleFade initialScale={0.3} in={true} key={movie.director}>
+                  <MovieCardWithImage movie={movie} key={movie.imdbid} />
                 </ScaleFade>
-                <Divider height={2} w="600px" colorScheme="teal" />
+                <Divider
+                  height={2}
+                  w="600px"
+                  colorScheme="teal"
+                  key={movie.title}
+                />
               </>
             );
           })}
         {isLoading && (
           <Center>
             {/* <Spinner size={"xl"} /> */}
-            <Stack>
-              <Skeleton width="600px" height="20px" />
-              <Skeleton width="600px" height="20px" />
-              <Skeleton width="600px" height="20px" />
-              <Skeleton width="600px" height="20px" />
-              <Skeleton width="600px" height="20px" />
-              <Skeleton width="600px" height="20px" />
-            </Stack>
+            <Flex gap={30}>
+              <Skeleton width="200px" height="160px" />
+              <Stack>
+                <Skeleton width="500px" height="20px" />
+                <Skeleton width="500px" height="20px" />
+                <Skeleton width="500px" height="20px" />
+                <Skeleton width="500px" height="20px" />
+                <Skeleton width="500px" height="20px" />
+                <Skeleton width="500px" height="20px" />
+                <Skeleton width="500px" height="20px" />
+              </Stack>
+            </Flex>
           </Center>
         )}
       </Flex>
