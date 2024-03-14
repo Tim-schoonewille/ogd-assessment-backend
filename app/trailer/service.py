@@ -129,7 +129,7 @@ class TrailerService(ITrailerService):
         return TrailerResult(movies=movies_with_trailer, from_cache=False)
 
     async def get_movie_data_with_trailer_by_imdb_id(
-        self, _id: str, title: str
+        self, _id: str
     ) -> models.MovieDataWithTrailer:
         """
         Use a iMDB identifier to query the movie provider for movie data.
@@ -156,7 +156,6 @@ class TrailerService(ITrailerService):
             MovieDataWithTrailer:
                 Pydantic model with meta-data about the movie and a useable trailer link.
         """
-        # TODO Remove the title argument.
         cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{_id}'
         movie_data_with_trailer_in_cache = await self._cache_provider.get_json(cache_key)
 

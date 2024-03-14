@@ -72,26 +72,21 @@ async def test_get_movie_data_with_trailer_by_imdb_id(
     first_result = data['movies'][0]
 
     imdb_id = first_result['imdbID']
-    title = first_result['Title']
 
     cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{imdb_id}'
     movie_data_with_trailer_before = await cache.get(cache_key)
     assert movie_data_with_trailer_before is None
 
     movie_data_with_trailer = (
-        await trailer_service.get_movie_data_with_trailer_by_imdb_id(
-            _id=imdb_id, title=title
-        )
+        await trailer_service.get_movie_data_with_trailer_by_imdb_id(_id=imdb_id)
     )
     assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
     for k in first_result:
-        print(k)
         if hasattr(movie_data_with_trailer, k):
             assert first_result[k] == getattr(movie_data_with_trailer, k)
 
     movie_data_with_trailer_after = json.loads(await cache.get(cache_key))
     assert movie_data_with_trailer_after is not None
-    print(movie_data_with_trailer_after)
     for k in first_result:
         assert first_result[k] == movie_data_with_trailer_after[k]
 
@@ -201,9 +196,7 @@ async def test_validate_cache_result_in_get_movie_data_with_trailer_by_imdb_id_i
     await cache.set(name=cache_key, value=json.dumps(data), ex=3600)
 
     movie_data_with_trailer = (
-        await trailer_service.get_movie_data_with_trailer_by_imdb_id(
-            _id=data['imdbID'], title=''
-        )
+        await trailer_service.get_movie_data_with_trailer_by_imdb_id(_id=data['imdbID'])
     )
     assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
 

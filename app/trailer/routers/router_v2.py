@@ -78,12 +78,10 @@ async def search_movies_compact_endpoint(
         },
     },
 )
-async def search_movie_data_with_trailer(
-    imdb_id: str, body: models.TrailerSearchForm, service: GetTrailerService
-):
+async def search_movie_data_with_trailer(imdb_id: str, service: GetTrailerService):
     try:
         movie_data_with_trailer = await service.get_movie_data_with_trailer_by_imdb_id(
-            _id=imdb_id, title=body.title.strip()
+            _id=imdb_id
         )
     except InvalidIMDBId as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

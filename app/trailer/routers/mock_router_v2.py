@@ -85,7 +85,7 @@ async def mock_search_movie_with_trailer_data_endpoint(
 ):
     try:
         movie_with_trailer_data = await service.get_movie_data_with_trailer_by_imdb_id(
-            _id=imdb_id, title=body.title, network_lag=network_lag
+            _id=imdb_id, network_lag=network_lag
         )
 
     except InvalidIMDBId as e:

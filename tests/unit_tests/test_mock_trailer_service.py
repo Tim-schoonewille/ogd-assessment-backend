@@ -51,7 +51,7 @@ async def test_get_movie_data_with_trailer_by_imdb_id(cache: AsyncRedis) -> None
     imdb_id = search_data[0]['imdbID']
 
     movie_data_with_trailer = await service.get_movie_data_with_trailer_by_imdb_id(
-        _id=imdb_id, title=title, network_lag=0
+        _id=imdb_id, network_lag=0
     )
     assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
     assert movie_data_with_trailer.Title == title
@@ -73,9 +73,7 @@ async def test_get_movie_data_with_trailer_by_imdb_id_invalid_id(
     service = MockTrailerService(config=get_config(), cache_provider=cache_provider)
 
     with pytest.raises(InvalidIMDBId):
-        await service.get_movie_data_with_trailer_by_imdb_id(
-            _id='asdfsad', title='rofl', network_lag=0
-        )
+        await service.get_movie_data_with_trailer_by_imdb_id(_id='asdfsad', network_lag=0)
 
 
 async def test_get_compact_movie_data_by_query(cache: AsyncRedis) -> None:

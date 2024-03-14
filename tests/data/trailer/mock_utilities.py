@@ -94,7 +94,7 @@ class MockTrailerService(ITrailerService):
         return TrailerResult(movies=movies_with_trailer)
 
     async def get_movie_data_with_trailer_by_imdb_id(
-        self, _id: str, title: str, network_lag: float = 0
+        self, _id: str, network_lag: float = 0
     ) -> MovieDataWithTrailer:
         await asyncio.sleep(network_lag)
         try:

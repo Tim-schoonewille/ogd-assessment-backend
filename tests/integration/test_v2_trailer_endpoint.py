@@ -46,11 +46,8 @@ async def test_search_by_imdb_id_endpoint(trailer_v2_fastapi: AsyncClient) -> No
 
     title = search_data[0]['Title']
     imdb_id = search_data[0]['imdbID']
-    body = {'title': title}
     params = {'network_lag': 0}
-    r = await trailer_v2_fastapi.post(
-        f'/trailer/search/{imdb_id}', json=body, params=params
-    )
+    r = await trailer_v2_fastapi.post(f'/trailer/search/{imdb_id}', params=params)
 
     assert r.status_code == 200
 
@@ -64,13 +61,9 @@ async def test_search_by_imdb_id_endpoint(trailer_v2_fastapi: AsyncClient) -> No
 async def test_search_by_imdb_id_endpoint_invalid_imdb_id(
     trailer_v2_fastapi: AsyncClient,
 ) -> None:
-    title = 'fuck this shit'
     imdb_id = 'non-existent-imdb-id'
-    body = {'title': title}
     params = {'network_lag': 0}
-    r = await trailer_v2_fastapi.post(
-        f'/trailer/search/{imdb_id}', json=body, params=params
-    )
+    r = await trailer_v2_fastapi.post(f'/trailer/search/{imdb_id}', params=params)
 
     assert r.status_code == 404
     assert r.json()['detail'] == 'INVALID_IMDB_ID'
