@@ -3,7 +3,6 @@ from typing import Any
 from fastapi.routing import APIRoute
 
 from redis.asyncio import Redis as AsyncRedis
-from app import models
 from app.interfaces import ICacheProvider
 
 
@@ -79,16 +78,3 @@ class CacheProvider(ICacheProvider):
         await self.cache_client.set(
             name=key, value=json.dumps(value), ex=self.cache_expire
         )
-
-
-# async def load_seed_data_in_cache_full_result_version(cache: AsyncRedis) -> None:
-#     """Loads seed data in cache for testing purposes on the frontend."""
-#     json_files = [('trailer-result-starwars.json', 'star wars')]
-
-#     for f in json_files:
-#         with open(f'./tests/data/trailer/{f[0]}', 'r', encoding='uft-8') as file:
-#             await cache.set(
-#                 name=f'{models.CachePrefixes.FULL_RESULT}{f[1]}',
-#                 value=json.dumps(file.read()),
-#                 ex=3600,
-#             )

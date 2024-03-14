@@ -36,13 +36,17 @@ class OMDBMovieDataProvider(IMovieDataProvider):
         async with AsyncClient(timeout=20) as c:
             params = {'apikey': self._api_key, 's': query.strip()}
             result = await c.get(self._api_base_url, params=params)
+
             if result.status_code not in [200, 201, 202, 203, 204]:
                 raise OmdbApiError('OMDB_API_ERROR: ', result.text)
+
             data = result.json()
+
         try:
             search_data = data['Search']
         except KeyError:
             raise MovieNotFoundError('MOVIE_NOT_FOUND')
+
         return self._convert_multi_to_object(data=search_data)
 
     async def get_by_id(self, _id: str) -> models.MovieDataWithTrailer:
@@ -58,8 +62,10 @@ class OMDBMovieDataProvider(IMovieDataProvider):
         async with AsyncClient() as c:
             params = {'apikey': self._api_key, 'i': _id.strip()}
             result = await c.get(self._api_base_url, params=params)
+
             if result.status_code not in [200, 201, 202, 203, 204]:
                 raise OmdbApiError('OMDB_API_ERROR: ', result.text)
+
             data = result.json()
 
         return self._convert_single_to_object(data=data)
@@ -109,15 +115,21 @@ class YoutubeTrailerProvider(ITrailerProvider):
             'q': f'{title.strip()} trailer',
             'key': self._api_key,
         }
+
         try:
             async with AsyncClient(timeout=20) as c:
                 result = await c.get(self._api_base_url, params=params)
+
                 if result.status_code not in [200, 201, 202, 203, 204, 205]:
                     raise YoutubeApiError(result.text)
+
                 data = result.json()
+
             first_result = data['items'][0]
+
         except ConnectTimeout:
             raise YoutubeApiError('EXTERNAL_API_ERROR')
+
         return self._convert_to_object(data=first_result)
 
     def _convert_to_object(self, data: dict[str, Any]) -> YoutubeTrailerData:

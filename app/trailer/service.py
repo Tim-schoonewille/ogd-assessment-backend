@@ -65,19 +65,24 @@ class TrailerService(ITrailerService):
             TrailerResult:
                 Pydantic model that houses a list of MovieDataWithTrailer objects.
                 Also has a 'from_cache' flag.
+
         """
         result_from_cache = await self._cache_provider.get_json(
             key=f'{models.CachePrefixes.FULL_RESULT}{query}'
         )
+
         if result_from_cache is not None:
             result_from_cache = models.TrailerResult(**result_from_cache)  # type: ignore
             result_from_cache.from_cache = True
             return result_from_cache
+
         movies_with_trailers = await self._search_movies_with_trailers(query=query)
+
         await self._cache_provider.store_json(
             key=f'{models.CachePrefixes.FULL_RESULT}{query}',
             value=movies_with_trailers.model_dump(),
         )
+
         return movies_with_trailers
 
     async def _search_movies_with_trailers(self, query: str) -> models.TrailerResult:
@@ -100,21 +105,27 @@ class TrailerService(ITrailerService):
         Returns:
             TrailerResult:
                 Pydantic model that houses a list of MovieDataWithTrailer objects.
+
         """
         movies = await self._movie_provider.search_multi(query=query)
+
         movies_with_trailer = []
+
         for movie in movies:
             movie_data = await self._movie_provider.get_by_id(_id=movie.imdbID)
             trailer_data = await self._trailer_provider.search_multi_return_first(
                 title=movie_data.Title
             )
+
             movie_data.trailer_link = (
                 f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
             )
             movie_data.trailer_embed_link = (
                 f'https://wwww.youtube.com/embed/{trailer_data.id.videoId}'
             )
+
             movies_with_trailer.append(movie_data)
+
         return TrailerResult(movies=movies_with_trailer, from_cache=False)
 
     async def get_movie_data_with_trailer_by_imdb_id(
@@ -155,9 +166,11 @@ class TrailerService(ITrailerService):
             return models.MovieDataWithTrailer(**movie_data_with_trailer_in_cache)  # type: ignore
 
         movie_data = await self._movie_provider.get_by_id(_id=_id)
+
         trailer_data = await self._trailer_provider.search_multi_return_first(
             title=movie_data.Title
         )
+
         movie_data.trailer_link = (
             f'https://www.youtube.com/watch?v={trailer_data.id.videoId}'
         )
@@ -168,6 +181,7 @@ class TrailerService(ITrailerService):
         await self._cache_provider.store_json(
             key=cache_key, value=movie_data.model_dump()
         )
+
         return movie_data
 
     async def get_compact_movie_data_by_query(
@@ -194,6 +208,7 @@ class TrailerService(ITrailerService):
                 via the movie provider.
         """
         cache_key = f'{models.CachePrefixes.COMPACT_MOVIE_DATA_LIST}{query}'
+
         compact_movie_data_in_cache = await self._cache_provider.get_json(cache_key)
 
         if self._validate_cached_compact_movie_data(compact_movie_data_in_cache):  # type: ignore
@@ -202,13 +217,16 @@ class TrailerService(ITrailerService):
                 for movie_data in compact_movie_data_in_cache
                 if isinstance(movie_data, dict)
             ]
+
             return compact_movie_data_list
 
         compact_movie_data_list = await self._movie_provider.search_multi(query=query)
+
         await self._cache_provider.store_json(
             key=cache_key,
             value=[movie_data.model_dump() for movie_data in compact_movie_data_list],
         )
+
         return compact_movie_data_list
 
     def _validate_cached_compact_movie_data(
@@ -216,14 +234,18 @@ class TrailerService(ITrailerService):
     ) -> bool:
         if list_compact_movie_data is None:
             return False
+
         try:
             for compact_movie_data in list_compact_movie_data:
                 keys_in_compact_movie_data = compact_movie_data.keys()
                 keys_in_model = models.CompactMovieData.__annotations__.keys()
+
                 if keys_in_compact_movie_data != keys_in_model:
                     return False
+
         except AttributeError:
             return False
+
         return True
 
     def _validate_cached_movie_data_with_trailer(
@@ -231,10 +253,10 @@ class TrailerService(ITrailerService):
     ) -> bool:
         if movie_data_with_trailer is None:
             return False
+
         keys_in_movie_data_with_trailer = list(movie_data_with_trailer.keys())
         keys_in_model = list(models.MovieData.__annotations__.keys()) + list(
             models.MovieDataWithTrailer.__annotations__.keys()
         )
-        print(keys_in_movie_data_with_trailer)
-        print(keys_in_model)
+
         return keys_in_movie_data_with_trailer == keys_in_model

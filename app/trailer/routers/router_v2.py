@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, status
-from pydantic import ValidationError
 
 from app import models
 from app.trailer.dependencies import GetTrailerService
@@ -51,6 +50,7 @@ async def search_movies_compact_endpoint(
         )
     except MovieNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
     return compact_movie_data_list
 
 
@@ -87,7 +87,7 @@ async def search_movie_data_with_trailer(
         )
     except InvalidIMDBId as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except YoutubeApiError as e:
+    except YoutubeApiError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='YOUTUBE_API_ERROR'
         )

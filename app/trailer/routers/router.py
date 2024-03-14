@@ -39,4 +39,5 @@ async def search_trailers_v1(body: models.TrailerSearchForm, service: GetTrailer
         trailer_result = await service.search(query=body.title.strip())
     except MovieNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
     return trailer_result

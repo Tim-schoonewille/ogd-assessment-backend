@@ -50,4 +50,5 @@ async def search_trailers(
         trailer_result = await service.search(query=body.title, network_lag=network_lag)
     except MovieNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
     return trailer_result
