@@ -44,12 +44,9 @@ async def mock_search_movies_compact_endpoint(
     service: GetMockTrailerService,
     network_lag: float = 1,
 ):
-    try:
-        compact_movie_data = await service.get_compact_movie_data_by_query(
-            query=title, network_lag=network_lag
-        )
-    except MovieNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    compact_movie_data = await service.get_compact_movie_data_by_query(
+        query=title, network_lag=network_lag
+    )
     return compact_movie_data
 
 

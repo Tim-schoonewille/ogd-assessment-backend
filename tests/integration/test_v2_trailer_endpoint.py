@@ -74,3 +74,14 @@ async def test_search_by_imdb_id_endpoint_invalid_imdb_id(
 
     assert r.status_code == 404
     assert r.json()['detail'] == 'INVALID_IMDB_ID'
+
+
+# async def test_search_by_imdb_id_endpoint_validation_error(
+#     trailer_v2_fastapi: AsyncClient,
+# ) -> None:
+#     imdb_id = 'indiana jones'
+#     body = {'title': True}
+
+#     r = await trailer_v2_fastapi.post(f'/trailer/search/{imdb_id}', json=body)
+
+#     assert r.status_code == 400

@@ -10,6 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  ScaleFade,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -33,9 +34,13 @@ const MovieCardWithImage: React.FC<movieCardProps> = ({ movie }) => {
   return (
     <Flex>
       <Image
-        src={movie.poster}
+        src={
+          movie.poster.startsWith("http")
+            ? movie.poster
+            : "https://img.freepik.com/free-photo/view-3d-cinema-elements_23-2150720822.jpg"
+        }
         alt={movie.title}
-        width="150px"
+        width="180px"
         height="250px"
         mr={5}
       />

@@ -1,6 +1,9 @@
 import json
+
+import pytest
 from app import models
-from app.config import get_config
+from app.config import get_config, ConfigBase
+from app.trailer.exceptions import MovieNotFoundError, OmdbApiError
 from app.trailer.utils import OMDBMovieDataProvider
 
 
@@ -36,6 +39,19 @@ async def test_search_multi():
         assert value['Type'] == result[i].Type
 
 
+async def test_search_multi_movie_not_found():
+    provider = OMDBMovieDataProvider(config=get_config())
+
+    with pytest.raises(MovieNotFoundError):
+        await provider.search_multi(query='#@)!$!_@#!@$!@$$')
+
+
+async def test_search_multi_api_error(mock_config: ConfigBase):
+    provider = OMDBMovieDataProvider(config=mock_config)
+    with pytest.raises(OmdbApiError):
+        await provider.search_multi(query='star wars')
+
+
 def test_convert_single_to_object():
     provider = OMDBMovieDataProvider(config=get_config())
     with open(FULL_MOVIE_DATA_FILEPATH, 'r', encoding='utf-8') as f:
@@ -56,6 +72,13 @@ async def test_search_by_id():
     for k, v in data.items():
         if hasattr(result, k):
             assert data[k] == getattr(result, k)
+
+
+async def test_search_by_id_api_error(mock_config: ConfigBase):
+    provider = OMDBMovieDataProvider(mock_config)
+
+    with pytest.raises(OmdbApiError):
+        await provider.get_by_id(_id='rofl')
 
 
 # TODO Test raise for status.

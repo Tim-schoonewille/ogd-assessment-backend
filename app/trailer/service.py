@@ -216,11 +216,14 @@ class TrailerService(ITrailerService):
     ) -> bool:
         if list_compact_movie_data is None:
             return False
-        for compact_movie_data in list_compact_movie_data:
-            keys_in_compact_movie_data = compact_movie_data.keys()
-            keys_in_model = models.CompactMovieData.__annotations__.keys()
-            if keys_in_compact_movie_data != keys_in_model:
-                return False
+        try:
+            for compact_movie_data in list_compact_movie_data:
+                keys_in_compact_movie_data = compact_movie_data.keys()
+                keys_in_model = models.CompactMovieData.__annotations__.keys()
+                if keys_in_compact_movie_data != keys_in_model:
+                    return False
+        except AttributeError:
+            return False
         return True
 
     def _validate_cached_movie_data_with_trailer(

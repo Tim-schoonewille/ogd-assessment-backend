@@ -30,7 +30,7 @@ class ConfigBase(BaseModel):
     OMDB_API_URL: str = 'http://www.omdbapi.com/'
 
     YOUTUBE_API_KEY: str = get_env('YOUTUBE_API_KEY')  # main
-    YOUTUBE_API_KEY: str = 'AIzaSyCp-B06iZx_zGazh1ftZRe4wKcFr6CExm4'  # backup 1
+    #  YOUTUBE_API_KEY: str = 'AIzaSyCp-B06iZx_zGazh1ftZRe4wKcFr6CExm4'  # backup 1
     # YOUTUBE_API_KEY: str = 'AIzaSyDN-1E5w3lyRMINPeMmcJ5_IVy58dEH2uk'  # backup 2
     YOUTUBE_API_URL: str = 'https://www.googleapis.com/youtube/v3/search'
 

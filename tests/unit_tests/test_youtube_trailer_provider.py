@@ -1,6 +1,9 @@
 import json
+
+import pytest
 from app import models
-from app.config import get_config
+from app.config import get_config, ConfigBase
+from app.trailer.exceptions import YoutubeApiError
 
 from app.trailer.utils import YoutubeTrailerProvider
 
@@ -40,3 +43,9 @@ async def test_search_multi_return_one():
     assert result.snippet.title == data['snippet']['title']
     assert result.snippet.description == data['snippet']['description']
     assert result.snippet.channelTitle == data['snippet']['channelTitle']
+
+
+async def test_search_multi_return_one_api_error(mock_config: ConfigBase) -> None:
+    provider = YoutubeTrailerProvider(mock_config)
+    with pytest.raises(YoutubeApiError):
+        await provider.search_multi_return_first(title='foo')

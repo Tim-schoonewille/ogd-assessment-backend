@@ -1,9 +1,11 @@
+import logging
 from httpx import ASGITransport, AsyncClient
+import pytest
 import pytest_asyncio
 from redis import asyncio as aioredis
 from redis.asyncio import Redis as AsyncRedis
 
-from app.config import get_config
+from app.config import ConfigBase, get_config
 from app.main import init_fastapi
 from app.trailer.dependencies import get_trailer_service
 from app.trailer.interfaces import ITrailerService
@@ -24,6 +26,15 @@ MOCK_V2_BASE_URL = 'http://localhost:8000/mock/v2'
 
 #     async with AsyncClient(app=app, base_url=API_BASE_URL, follow_redirects=True) as c:
 #         yield c
+
+
+@pytest.fixture(scope='function')
+def mock_config() -> ConfigBase:
+    class MockConfig(ConfigBase):
+        YOUTUBE_API_KEY: str = 'invalid'
+        OMDB_API_KEY: str = 'invalid'
+
+    return MockConfig()
 
 
 @pytest_asyncio.fixture(scope='function')
@@ -115,3 +126,9 @@ async def trailer_v2_fastapi(cache: AsyncRedis):
         follow_redirects=True,
     ) as c:
         yield c
+
+
+@pytest_asyncio.fixture()
+async def captured_logs(caplog):
+    caplog.set_level(logging.INFO)
+    yield caplog

@@ -1,6 +1,6 @@
 from typing import Any
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ConnectTimeout
 from app.config import ConfigBase
 from app.trailer.exceptions import MovieNotFoundError, OmdbApiError, YoutubeApiError
 from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
@@ -109,12 +109,15 @@ class YoutubeTrailerProvider(ITrailerProvider):
             'q': f'{title.strip()} trailer',
             'key': self._api_key,
         }
-        async with AsyncClient() as c:
-            result = await c.get(self._api_base_url, params=params)
-            if result.status_code not in [200, 201, 202, 203, 204, 205]:
-                raise YoutubeApiError(result.text)
-            data = result.json()
-        first_result = data['items'][0]
+        try:
+            async with AsyncClient(timeout=20) as c:
+                result = await c.get(self._api_base_url, params=params)
+                if result.status_code not in [200, 201, 202, 203, 204, 205]:
+                    raise YoutubeApiError(result.text)
+                data = result.json()
+            first_result = data['items'][0]
+        except ConnectTimeout:
+            raise YoutubeApiError('EXTERNAL_API_ERROR')
         return self._convert_to_object(data=first_result)
 
     def _convert_to_object(self, data: dict[str, Any]) -> YoutubeTrailerData:

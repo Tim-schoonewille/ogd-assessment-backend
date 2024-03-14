@@ -7,6 +7,7 @@ import {
   Heading,
   Icon,
   Input,
+  ScaleFade,
   Skeleton,
   Spinner,
   Stack,
@@ -31,7 +32,7 @@ export default function SearchMockV2() {
   async function searchMovies(query: string) {
     setCompactMovieData([]);
     setCompactMovieData([]);
-    const URL = "http://localhost:8000/mock/v2/trailer/search";
+    const URL = "http://localhost:8000/api/v2/trailer/search";
 
     try {
       setIsLoading(true);
@@ -116,9 +117,14 @@ export default function SearchMockV2() {
       >
         {moviesWithTrailer &&
           moviesWithTrailer.map((movie) => {
+            if (!movie.title || !movie.trailerEmbedLink) {
+              return;
+            }
             return (
               <>
-                <MovieCardWithImage movie={movie} />
+                <ScaleFade initialScale={0.3} in={true}>
+                  <MovieCardWithImage movie={movie} />
+                </ScaleFade>
                 <Divider height={2} w="600px" colorScheme="teal" />
               </>
             );

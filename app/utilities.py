@@ -8,7 +8,14 @@ from app.interfaces import ICacheProvider
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
-    return f'{route.tags[0]}-{route.name}'
+    """Generate custom unique id function for fastapi docs/client creation."""
+    try:
+        unique_id = f'{route.tags[0]}-{route.name}'
+    except IndexError:
+        path_split = route.path.split('/')
+        path_joined_with_dash = '-'.join(path_split)
+        unique_id = (f'{path_joined_with_dash}-{route.name}')[1:]
+    return unique_id
 
 
 class CacheProvider(ICacheProvider):
@@ -74,14 +81,14 @@ class CacheProvider(ICacheProvider):
         )
 
 
-async def load_seed_data_in_cache_full_result_version(cache: AsyncRedis) -> None:
-    """Loads seed data in cache for testing purposes on the frontend."""
-    json_files = [('trailer-result-starwars.json', 'star wars')]
+# async def load_seed_data_in_cache_full_result_version(cache: AsyncRedis) -> None:
+#     """Loads seed data in cache for testing purposes on the frontend."""
+#     json_files = [('trailer-result-starwars.json', 'star wars')]
 
-    for f in json_files:
-        with open(f'./tests/data/trailer/{f[0]}', 'r', encoding='uft-8') as file:
-            await cache.set(
-                name=f'{models.CachePrefixes.FULL_RESULT}{f[1]}',
-                value=json.dumps(file.read()),
-                ex=3600,
-            )
+#     for f in json_files:
+#         with open(f'./tests/data/trailer/{f[0]}', 'r', encoding='uft-8') as file:
+#             await cache.set(
+#                 name=f'{models.CachePrefixes.FULL_RESULT}{f[1]}',
+#                 value=json.dumps(file.read()),
+#                 ex=3600,
+#             )

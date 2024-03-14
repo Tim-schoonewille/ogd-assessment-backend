@@ -165,6 +165,21 @@ async def test_validate_cached_compact_movie_data(trailer_service: TrailerServic
     )
 
 
+async def test_validate_cached_compact_movie_data_erroneaus_data(
+    trailer_service: TrailerService,
+) -> None:
+    mock_result_from_cache = {'Title': 'test'}
+    assert (
+        trailer_service._validate_cached_compact_movie_data(
+            list_compact_movie_data=mock_result_from_cache  # type: ignore
+        )
+        is False
+    )
+
+    mock_result = [{'title': 'fuck the other attrs.'}]
+    assert trailer_service._validate_cached_compact_movie_data(mock_result) is False
+
+
 async def test_validate_cached_movie_data_with_trailer(
     trailer_service: TrailerService,
 ) -> None:
@@ -174,3 +189,36 @@ async def test_validate_cached_movie_data_with_trailer(
     assert trailer_service._validate_cached_movie_data_with_trailer(
         movie_data_with_trailer=mock_data_from_cache
     )
+
+
+async def test_validate_cache_result_in_get_movie_data_with_trailer_by_imdb_id_invalid(
+    trailer_service: TrailerService, cache: AsyncRedis
+):
+    with open(TRAILER_RESULT_FILEPATH, 'r', encoding='utf-8') as file:
+        data = (json.loads(file.read()))['movies'][0]
+
+    cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{data["imdbID"]}'
+    await cache.set(name=cache_key, value=json.dumps(data), ex=3600)
+
+    movie_data_with_trailer = (
+        await trailer_service.get_movie_data_with_trailer_by_imdb_id(
+            _id=data['imdbID'], title=''
+        )
+    )
+    assert isinstance(movie_data_with_trailer, models.MovieDataWithTrailer)
+
+
+async def test_validate_cache_get_compact_movie_data_by_query_invalid(
+    trailer_service: TrailerService, cache: AsyncRedis
+) -> None:
+    with open(STARWARS_SEARCH_JSON_FILEPATH, 'r', encoding='utf-8') as file:
+        data = (json.loads(file.read()))['Search']
+
+    cache_key = f'{models.CachePrefixes.COMPACT_MOVIE_DATA_LIST}star wars'
+    await cache.set(name=cache_key, value=json.dumps(data), ex=3600)
+
+    compact_movie_data = await trailer_service.get_compact_movie_data_by_query(
+        query='star wars'
+    )
+    for movie in compact_movie_data:
+        assert isinstance(movie, models.CompactMovieData)

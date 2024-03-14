@@ -9,6 +9,7 @@ export default function App() {
     <Router>
       <ColorModeSwitcher />
       <Routes>
+        <Route path="/" element={<SearchMockV2 />} />
         <Route path="/mock/search" element={<SearchMockV2 />} />
         <Route path="/v2/search" element={<SearchV2 />} />
         <Route path="/mock-v2" element={<MockSearchPageV2 />} />
