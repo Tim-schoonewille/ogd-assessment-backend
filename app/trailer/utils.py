@@ -226,22 +226,3 @@ class CacheHeaderMiddleware(BaseHTTPMiddleware):
         # TODO Test this!!!
 
 
-async def get_max_age_of_movie_with_details_and_trailer(
-    request: Request, cache: AsyncRedis
-) -> int:
-    PATH = 'search'
-    path_parameters = request.url.path.split('/')
-
-    if PATH in path_parameters:
-        path_index = path_parameters.index(PATH)
-        imdb_id = path_parameters[path_index + 1]
-        if str(imdb_id).startswith('tt'):
-            ttl = await cache.ttl(
-                name=f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{imdb_id}'
-            )
-            return int(ttl)
-    return 0
-
-
-async def get_max_age_compact_movie_list(request: Request):
-    pass
