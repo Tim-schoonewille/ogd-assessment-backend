@@ -158,10 +158,11 @@ class TrailerService(ITrailerService):
         """
         cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{_id}'
         movie_data_with_trailer_in_cache = await self._cache_provider.get_json(cache_key)
-
+        print('in cache:', movie_data_with_trailer_in_cache)
         if self._validate_cached_movie_data_with_trailer(
             movie_data_with_trailer_in_cache  # type: ignore
         ):
+            print('returning movie details from cache, not api.')
             return models.MovieDataWithTrailer(**movie_data_with_trailer_in_cache)  # type: ignore
 
         movie_data = await self._movie_provider.get_by_id(_id=_id)
@@ -180,7 +181,7 @@ class TrailerService(ITrailerService):
         await self._cache_provider.store_json(
             key=cache_key, value=movie_data.model_dump()
         )
-
+        print('returning movie data from external api...')
         return movie_data
 
     async def get_compact_movie_data_by_query(

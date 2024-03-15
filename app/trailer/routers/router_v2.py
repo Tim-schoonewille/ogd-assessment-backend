@@ -13,7 +13,7 @@ from app.trailer.exceptions import (
 router = APIRouter(prefix='/trailer', tags=['trailer-service-v2'])
 
 
-@router.post(
+@router.get(
     path='/search',
     response_model=list[models.CompactMovieData],
     status_code=status.HTTP_200_OK,
@@ -46,12 +46,10 @@ router = APIRouter(prefix='/trailer', tags=['trailer-service-v2'])
         },
     },
 )
-async def search_movies_compact_endpoint(
-    body: models.TrailerSearchForm, service: GetTrailerService
-):
+async def search_movies_compact_endpoint(title: str, service: GetTrailerService):
     try:
         compact_movie_data_list = await service.get_compact_movie_data_by_query(
-            query=body.title.strip()
+            query=title.strip()
         )
     except MovieNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -59,7 +57,7 @@ async def search_movies_compact_endpoint(
     return compact_movie_data_list
 
 
-@router.post(
+@router.get(
     path='/search/{imdb_id}',
     response_model=models.MovieDataWithTrailer,
     status_code=status.HTTP_200_OK,

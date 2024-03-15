@@ -9,7 +9,7 @@ from tests.data.trailer.mock_utilities import MockMovies
 router = APIRouter(prefix='/trailer', tags=['mock-trailer-v2'])
 
 
-@router.post(
+@router.get(
     path='/search',
     response_model=list[models.CompactMovieData],
     status_code=status.HTTP_200_OK,
@@ -51,7 +51,7 @@ async def mock_search_movies_compact_endpoint(
     return compact_movie_data
 
 
-@router.post(
+@router.get(
     path='/search/{imdb_id}',
     response_model=models.MovieDataWithTrailer,
     status_code=status.HTTP_200_OK,
@@ -79,7 +79,6 @@ async def mock_search_movies_compact_endpoint(
 )
 async def mock_search_movie_with_trailer_data_endpoint(
     imdb_id: str,
-    body: models.TrailerSearchForm,
     service: GetMockTrailerService,
     network_lag: float = 1,
 ):

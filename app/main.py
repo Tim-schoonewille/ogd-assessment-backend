@@ -4,7 +4,9 @@ import os
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.trailer.utils import CacheHeaderMiddleware
 from app.utilities import custom_generate_unique_id
+
 # from app.test.router import router as test_router
 from app.trailer.routers.router import router as trailer_router
 from app.trailer.routers.router_v2 import router as v2_trailer_router
@@ -38,6 +40,7 @@ def init_fastapi(testing: bool = False) -> FastAPI:
         allow_methods=['*'],
         allow_headers=['*'],
     )
+    server.add_middleware(CacheHeaderMiddleware)
 
     api_v1 = APIRouter(prefix='/api/v1')
     mock_v1 = APIRouter(prefix='/mock/v1')
