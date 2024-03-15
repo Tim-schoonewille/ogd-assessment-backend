@@ -39,22 +39,22 @@ export default function SearchMockV2() {
     setMoviesWithTrailer([]);
     setErrorData("");
     setErrorFlag(false);
-    const URL = "http://localhost:8000/mock/v2/trailer/search";
+    const URL = "http://localhost:8000/api/v2/trailer/search";
 
     try {
       setIsLoading(true);
       const response = await fetch(
         `${URL}?title=${query}&network_lag=${networkLag}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ title: query }),
         }
       );
       if (response.ok) {
         const data = await response.json();
+        console.log("response headers:", response.headers);
         setCompactMovieData(data);
 
         const dataArray = [];
@@ -63,11 +63,10 @@ export default function SearchMockV2() {
           const response = await fetch(
             `${URL}/${movie.imdbid}?network_lag=${networkLag}`,
             {
-              method: "POST",
+              method: "GET",
               headers: {
                 "content-type": "application/json",
               },
-              body: JSON.stringify({ title: movie.title }),
             }
           );
           if (response.ok) {
@@ -160,6 +159,9 @@ export default function SearchMockV2() {
             Search
           </Button>
         </Flex>
+      </Flex>
+      <Flex alignItems="center" flexDir="column">
+        {isLoading && <Text> Loading {compactMovieData.length} movies...</Text>}
       </Flex>
       <Flex
         flexDir={"column"}
