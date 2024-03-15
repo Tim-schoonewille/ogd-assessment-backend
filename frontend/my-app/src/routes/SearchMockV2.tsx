@@ -31,11 +31,14 @@ export default function SearchMockV2() {
     MovieDataWithTrailer[]
   >([]);
   const [errorData, setErrorData] = useState("");
+  const [errorFlag, setErrorFlag] = useState(false);
   const toast = useToast();
 
   async function searchMovies(query: string) {
     setCompactMovieData([]);
     setMoviesWithTrailer([]);
+    setErrorData("");
+    setErrorFlag(false);
     const URL = "http://localhost:8000/mock/v2/trailer/search";
 
     try {
@@ -74,11 +77,22 @@ export default function SearchMockV2() {
             setMoviesWithTrailer([...dataArray]);
           } else {
             setErrorData("Error fetching data..");
+            setErrorFlag(true);
             console.log("error data: ", errorData);
+            console.log("error flag:", errorFlag);
           }
         }
+      } else {
+        setErrorFlag(true);
+        // toast({
+        //   title: "Error fetching data!",
+        //   description: "Movie not found!",
+        //   status: "error",
+        //   duration: 9000,
+        //   isClosable: true,
+        // });
       }
-      if (errorData) {
+      if (errorFlag) {
         toast({
           title: "Error fetching data!",
           description: "Movie not found!",
@@ -91,8 +105,6 @@ export default function SearchMockV2() {
       console.error(e);
     } finally {
       setIsLoading(false);
-      setErrorData("");
-      console.log("error", errorData);
     }
   }
 

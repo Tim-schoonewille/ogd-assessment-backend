@@ -6,6 +6,10 @@ class YoutubeApiError(Exception):
     pass
 
 
+class InvalidTrailerData(Exception):
+    pass
+
+
 class InvalidIMDBId(Exception):
     pass
 

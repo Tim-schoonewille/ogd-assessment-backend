@@ -3,7 +3,7 @@ import json
 import pytest
 from app import models
 from app.config import get_config, ConfigBase
-from app.trailer.exceptions import MovieNotFoundError, OmdbApiError
+from app.trailer.exceptions import InvalidIMDBId, MovieNotFoundError, OmdbApiError
 from app.trailer.utils import OMDBMovieDataProvider
 
 
@@ -19,6 +19,13 @@ def test_convert_multi_to_object():
     result = provider._convert_multi_to_object(data=data['Search'])
     for obj in result:
         assert isinstance(obj, models.CompactMovieData)
+
+
+def test_convert_multi_to_object_invalid_data():
+    provider = OMDBMovieDataProvider(config=get_config())
+
+    with pytest.raises(MovieNotFoundError):
+        provider._convert_multi_to_object(data=[{'not-the-data': 'i would expect'}])
 
 
 async def test_search_multi():
@@ -59,6 +66,13 @@ def test_convert_single_to_object():
 
     result = provider._convert_single_to_object(data=data)
     assert isinstance(result, models.MovieDataWithTrailer)
+
+
+def test_convert_single_to_object_invalid_data():
+    provider = OMDBMovieDataProvider(config=get_config())
+
+    with pytest.raises(InvalidIMDBId):
+        provider._convert_single_to_object(data={'not-the-data': 'i expected'})
 
 
 async def test_search_by_id():

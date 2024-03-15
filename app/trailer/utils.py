@@ -1,8 +1,15 @@
 from typing import Any
 
 from httpx import AsyncClient, ConnectTimeout
+from pydantic import ValidationError
 from app.config import ConfigBase
-from app.trailer.exceptions import MovieNotFoundError, OmdbApiError, YoutubeApiError
+from app.trailer.exceptions import (
+    InvalidIMDBId,
+    InvalidTrailerData,
+    MovieNotFoundError,
+    OmdbApiError,
+    YoutubeApiError,
+)
 from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
 from app import models
 from app.trailer.models import MovieDataWithTrailer, YoutubeTrailerData
@@ -58,6 +65,7 @@ class OMDBMovieDataProvider(IMovieDataProvider):
 
         Returns:
             MovieData -- A pydantic model with complete data from the API.
+
         """
         async with AsyncClient() as c:
             params = {'apikey': self._api_key, 'i': _id.strip()}
@@ -74,11 +82,21 @@ class OMDBMovieDataProvider(IMovieDataProvider):
         self, data: list[dict[str, str]]
     ) -> list[models.CompactMovieData]:
         """Converts the raw list of dictionaries to pydantic models."""
-        return [models.CompactMovieData(**movie_data) for movie_data in data]
+        try:
+            converted_objects = [
+                models.CompactMovieData(**movie_data) for movie_data in data
+            ]
+        except ValidationError:
+            raise MovieNotFoundError('MOVIE_NOT_FOUND')
+        return converted_objects
 
     def _convert_single_to_object(self, data: dict[str, Any]) -> MovieDataWithTrailer:
         """Converts the raw dictionary to a pydantic model."""
-        return models.MovieDataWithTrailer(**data)
+        try:
+            converted_object = models.MovieDataWithTrailer(**data)
+        except ValidationError:
+            raise InvalidIMDBId('INVALID_IMDB_ID')
+        return converted_object
 
 
 class YoutubeTrailerProvider(ITrailerProvider):
@@ -135,4 +153,9 @@ class YoutubeTrailerProvider(ITrailerProvider):
     def _convert_to_object(self, data: dict[str, Any]) -> YoutubeTrailerData:
         "Converts the raw dictionary JSON representation to a pydantic model."
         # TODO Test invalid input
-        return YoutubeTrailerData(**data)
+
+        try:
+            converted = YoutubeTrailerData(**data)
+        except ValidationError:
+            raise InvalidTrailerData('INVALID_TRAILER_DATA')
+        return converted

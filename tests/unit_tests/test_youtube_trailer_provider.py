@@ -3,7 +3,7 @@ import json
 import pytest
 from app import models
 from app.config import get_config, ConfigBase
-from app.trailer.exceptions import YoutubeApiError
+from app.trailer.exceptions import InvalidTrailerData, YoutubeApiError
 
 from app.trailer.utils import YoutubeTrailerProvider
 
@@ -49,3 +49,10 @@ async def test_search_multi_return_one_api_error(mock_config: ConfigBase) -> Non
     provider = YoutubeTrailerProvider(mock_config)
     with pytest.raises(YoutubeApiError):
         await provider.search_multi_return_first(title='foo')
+
+
+def test_convert_to_object_invalid_data() -> None:
+    provider = YoutubeTrailerProvider(get_config())
+    invalid_data = {'foo': 'bar'}
+    with pytest.raises(InvalidTrailerData):
+        converted_object = provider._convert_to_object(invalid_data)

@@ -2,7 +2,12 @@ from fastapi import APIRouter, HTTPException, status
 
 from app import models
 from app.trailer.dependencies import GetTrailerService
-from app.trailer.exceptions import InvalidIMDBId, MovieNotFoundError, YoutubeApiError
+from app.trailer.exceptions import (
+    InvalidIMDBId,
+    InvalidTrailerData,
+    MovieNotFoundError,
+    YoutubeApiError,
+)
 
 
 router = APIRouter(prefix='/trailer', tags=['trailer-service-v2'])
@@ -89,9 +94,12 @@ async def search_movie_data_with_trailer(imdb_id: str, service: GetTrailerServic
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='YOUTUBE_API_ERROR'
         )
+    except InvalidTrailerData as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     # except ValidationError:
     #     raise HTTPException(
     #         status_code=status.HTTP_400_BAD_REQUEST, detail='INVALID_REQUEST'
     #     )
     # TODO WHY WAS THIS IN HERE?
+    # Probably when converting to a pydantic model somewhere
     return movie_data_with_trailer
