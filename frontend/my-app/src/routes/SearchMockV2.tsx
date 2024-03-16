@@ -39,7 +39,7 @@ export default function SearchMockV2() {
     setMoviesWithTrailer([]);
     setErrorData("");
     setErrorFlag(false);
-    const URL = "http://localhost:8000/api/v2/trailer/search";
+    const URL = "http://localhost:8000/mock/v2/trailer/search";
 
     try {
       setIsLoading(true);

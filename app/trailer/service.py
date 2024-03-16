@@ -158,7 +158,6 @@ class TrailerService(ITrailerService):
         """
         cache_key = f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{_id}'
         movie_data_with_trailer_in_cache = await self._cache_provider.get_json(cache_key)
-        print('in cache:', movie_data_with_trailer_in_cache)
         if self._validate_cached_movie_data_with_trailer(
             movie_data_with_trailer_in_cache  # type: ignore
         ):

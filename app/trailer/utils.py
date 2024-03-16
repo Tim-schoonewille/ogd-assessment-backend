@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta
+from hashlib import md5
 import json
 from typing import Annotated, Any
 
 from fastapi import Depends, Request, responses
+from fastapi.concurrency import iterate_in_threadpool
 from httpx import AsyncClient, ConnectTimeout
 from redis.asyncio import Redis as AsyncRedis
 from redis import asyncio as aioredis
@@ -171,58 +174,85 @@ def hello_dependency() -> str:
     return 'hello'
 
 
+# class CacheHeaderMiddleware(BaseHTTPMiddleware):
+#     async def dispatch(
+#         self,
+#         request: Request,
+#         call_next: RequestResponseEndpoint,
+#     ) -> Response:
+#         config = get_config()
+#         PATH = 'search'
+#         REDIS_URL = f'redis://:{config.REDIS_PASSWORD}@{config.REDIS_HOST}/0:6379'
+#         redis = aioredis.from_url(url=REDIS_URL)
+
+#         response = await call_next(request)
+#         response.headers.update({'Cache-Control': 'max-age=300'})
+
+#         path_parameters = request.url.path.split('/')
+#         query_parameters = request.query_params
+#         print('from middleware! :D')
+#         if PATH in path_parameters:
+#             path_index = path_parameters.index(PATH)
+#             title_param = query_parameters.get('title')
+#             if title_param is not None:
+#                 print('we here!!')
+#                 async with redis.client() as client:
+#                     cache_key = f'{models.CachePrefixes.COMPACT_MOVIE_DATA_LIST}{title_param.strip()}'
+#                     ttl = await client.ttl(cache_key)
+#                     response.headers['Cache-Control'] = (
+#                         f'public, max-age={ttl if ttl > 0 else 300}'
+#                     )
+#                     # This is too test:
+#                     # TODO Remove this
+#                     # response.headers['Cache-Control'] = 'public, max-age=30'
+
+#             else:
+#                 try:
+#                     imdb_id = str(path_parameters[path_index + 1])
+#                     if imdb_id.startswith('tt'):
+#                         async with redis.client() as client:
+#                             cache_key = (
+#                                 f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{imdb_id}'
+#                             )
+#                             ttl = await client.ttl(cache_key)
+#                             response.headers['Cache-Control'] = (
+#                                 f'public, max-age={ttl if ttl > 0 else 300}'
+#                             )
+#                             # this is to test:
+#                             # TODO Remove this.
+#                             # response.headers['Cache-Control'] = 'public, max-age=30'
+
+#                 except IndexError:
+#                     pass
+#         return response
+
+#         # TODO Test this!!!
+
+
 class CacheHeaderMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self,
         request: Request,
         call_next: RequestResponseEndpoint,
     ) -> Response:
-        config = get_config()
-        PATH = 'search'
-        REDIS_URL = f'redis://:{config.REDIS_PASSWORD}@{config.REDIS_HOST}/0:6379'
-        redis = aioredis.from_url(url=REDIS_URL)
-
         response = await call_next(request)
-        response.headers.update({'Cache-Control': 'max-age=300'})
 
-        path_parameters = request.url.path.split('/')
-        query_parameters = request.query_params
-        print('from middleware! :D')
-        if PATH in path_parameters:
-            path_index = path_parameters.index(PATH)
-            title_param = query_parameters.get('title')
-            if title_param is not None:
-                print('we here!!')
-                async with redis.client() as client:
-                    cache_key = f'{models.CachePrefixes.COMPACT_MOVIE_DATA_LIST}{title_param.strip()}'
-                    ttl = await client.ttl(cache_key)
-                    response.headers['Cache-Control'] = (
-                        f'public, max-age={ttl if ttl > 0 else 300}'
-                    )
-                    # This is too test:
-                    # TODO Remove this
-                    # response.headers['Cache-Control'] = 'public, max-age=30'
+        response_body = [chunk async for chunk in response.body_iterator]  # type: ignore
+        response.body_iterator = iterate_in_threadpool(iter(response_body))  # type: ignore
+        body = response_body[0]
 
-            else:
-                try:
-                    imdb_id = str(path_parameters[path_index + 1])
-                    if imdb_id.startswith('tt'):
-                        async with redis.client() as client:
-                            cache_key = (
-                                f'{models.CachePrefixes.SINGLE_RESULT_BY_ID}{imdb_id}'
-                            )
-                            ttl = await client.ttl(cache_key)
-                            response.headers['Cache-Control'] = (
-                                f'public, max-age={ttl if ttl > 0 else 300}'
-                            )
-                            # this is to test:
-                            # TODO Remove this.
-                            # response.headers['Cache-Control'] = 'public, max-age=30'
+        if 'If-None-Match' in request.headers:
+            print('It is in the headers!!!!')
+            current_etag = md5(body).hexdigest()
+            client_etag = request.headers['If-None-Match']
 
-                except IndexError:
-                    pass
+            if current_etag == client_etag:
+                print('Etags match!')
+                response.status_code = 304
+                return response
+        response.headers.update({'Cache-Control': 'public, max-age=10'})
+        etag = md5(body).hexdigest()
+
+        response.headers.update({'ETag': str(etag)})
+
         return response
-
-        # TODO Test this!!!
-
-

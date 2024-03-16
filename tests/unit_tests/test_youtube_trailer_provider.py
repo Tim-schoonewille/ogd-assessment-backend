@@ -55,4 +55,4 @@ def test_convert_to_object_invalid_data() -> None:
     provider = YoutubeTrailerProvider(get_config())
     invalid_data = {'foo': 'bar'}
     with pytest.raises(InvalidTrailerData):
-        converted_object = provider._convert_to_object(invalid_data)
+        provider._convert_to_object(invalid_data)
