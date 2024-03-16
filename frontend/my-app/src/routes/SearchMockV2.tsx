@@ -22,7 +22,7 @@ import { BiCameraMovie } from "react-icons/bi";
 
 export default function SearchMockV2() {
   const [title, setTitle] = useState("");
-  const [networkLag, setNetworkLag] = useState("1.2");
+  const [networkLag, setNetworkLag] = useState("0.5");
   const [isLoading, setIsLoading] = useState(false);
   const [compactMovieData, setCompactMovieData] = useState<CompactMovieData[]>(
     []
@@ -54,7 +54,6 @@ export default function SearchMockV2() {
       );
       if (response.ok) {
         const data = await response.json();
-        console.log("response headers:", response.headers);
         setCompactMovieData(data);
 
         const dataArray = [];
@@ -82,16 +81,8 @@ export default function SearchMockV2() {
           }
         }
       } else {
+        console.log("Not ok!");
         setErrorFlag(true);
-        // toast({
-        //   title: "Error fetching data!",
-        //   description: "Movie not found!",
-        //   status: "error",
-        //   duration: 9000,
-        //   isClosable: true,
-        // });
-      }
-      if (errorFlag) {
         toast({
           title: "Error fetching data!",
           description: "Movie not found!",
@@ -104,6 +95,7 @@ export default function SearchMockV2() {
       console.error(e);
     } finally {
       setIsLoading(false);
+      setTitle("");
     }
   }
 
@@ -160,7 +152,7 @@ export default function SearchMockV2() {
           </Button>
         </Flex>
       </Flex>
-      <Flex alignItems="center" flexDir="column">
+      <Flex alignItems="center" flexDir="column" mb={3}>
         {isLoading && <Text> Loading {compactMovieData.length} movies...</Text>}
       </Flex>
       <Flex
