@@ -11,6 +11,8 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - OMDB_API_KEY=${OMDB_API_KEY}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - BACKUP_YOUTUBE_KEY=${BACKUP_YOUTUBE_KEY}
+      - BACKUP_YOUTUBE_KEY_2=${BACKUP_YOUTUBE_KEY_2}
     command: ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0"]
     ports:
       - "8000:8000"
@@ -20,11 +22,19 @@ services:
   cache:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: /bin/sh -c "redis-server --requirepass REDIS_PASSWORD"
     volumes:
       - cache_volume:/data
-
+  
+  frontend-react:
+    build:
+      context: ./frontend/my-app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - ./frontend/my-app:/app
 
 volumes:
   cache_volume:

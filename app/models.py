@@ -14,3 +14,24 @@ class EndpointResponse(CustomBase):
     """Model for generic responses using the 'detail' key."""
 
     detail: str
+
+
+class HttpError(CustomBase):
+    """Model when a HTTP Exception occurs."""
+
+    detail: str
+
+
+from app.trailer.models import (  # noqa
+    MovieData,
+    CompactMovieData,
+    YoutubeID,
+    YoutubeTrailerData,
+    YoutubeTrailerDataSnippet,
+    MovieDataWithTrailer,
+    TrailerResult,
+    CachePrefixes,
+    TrailerSearchForm,
+)
+
+MovieDataWithTrailer.model_rebuild()
