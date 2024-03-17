@@ -48,7 +48,7 @@ router = APIRouter(prefix='/trailer', tags=['trailer-service-v2'])
 async def search_movies_compact_endpoint(title: str, service: GetTrailerService):
     try:
         compact_movie_data_list = await service.get_compact_movie_data_by_query(
-            query=title.strip()
+            query=title.strip().lower()
         )
     except MovieNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -88,7 +88,7 @@ async def search_movies_compact_endpoint(title: str, service: GetTrailerService)
 async def search_movie_data_with_trailer(imdb_id: str, service: GetTrailerService):
     try:
         movie_data_with_trailer = await service.get_movie_data_with_trailer_by_imdb_id(
-            _id=imdb_id
+            _id=imdb_id.lower()
         )
     except InvalidIMDBId as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

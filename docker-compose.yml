@@ -16,8 +16,8 @@ services:
     command: ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0"]
     ports:
       - "8000:8000"
-    # volumes:
-    #   - .:/app
+    volumes:
+      - .:/app
 
   cache:
     image: redis:alpine

@@ -2,10 +2,7 @@ from hashlib import md5
 
 from fastapi import Request, Response
 from fastapi.concurrency import iterate_in_threadpool
-from starlette.middleware.base import (
-    BaseHTTPMiddleware,
-    RequestResponseEndpoint
-)
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 
 class CacheHeaderMiddleware(BaseHTTPMiddleware):
@@ -35,12 +32,9 @@ class CacheHeaderMiddleware(BaseHTTPMiddleware):
         body = response_body[0]
 
         if 'If-None-Match' in request.headers:
-            print('It is in the headers!!!!')
             current_etag = md5(body).hexdigest()
             client_etag = request.headers['If-None-Match']
-
             if current_etag == client_etag:
-                print('Etags match!')
                 response.status_code = 304
                 return response
         response.headers.update({'Cache-Control': 'public, max-age=300'})
