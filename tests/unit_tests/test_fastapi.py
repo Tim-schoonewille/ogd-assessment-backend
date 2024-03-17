@@ -1,10 +1,16 @@
 import os
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 import pytest
 from _pytest.logging import LogCaptureFixture
 
+from app.config import ConfigBase
+from app.interfaces import ICacheProvider
 from app.main import init_fastapi, lifespan, app as initiated_app
+from app.trailer.dependencies import get_trailer_service
+from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
+from app.trailer.service import TrailerService
 
 
 @pytest.mark.asyncio
@@ -45,3 +51,18 @@ async def test_health_endpoint():
         r = await client.get('health')
         assert r.status_code == 200
         assert r.json()['alive'] is True
+
+
+async def test_trailer_service_dependency():
+    app = FastAPI()
+
+    @app.get('/')
+    async def trailer_service(
+        service: Annotated[TrailerService, Depends(get_trailer_service)],
+    ):
+        assert isinstance(service._config, ConfigBase)
+        assert isinstance(service._cache_provider, ICacheProvider)
+        assert isinstance(service._movie_provider, IMovieDataProvider)
+        assert isinstance(service._trailer_provider, ITrailerProvider)
+        return True
+

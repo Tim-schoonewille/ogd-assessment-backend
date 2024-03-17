@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 from fastapi import APIRouter, HTTPException, status
 
 from app import models
@@ -6,6 +7,7 @@ from app.trailer.exceptions import (
     InvalidIMDBId,
     InvalidTrailerData,
     MovieNotFoundError,
+    OmdbApiError,
     YoutubeApiError,
 )
 
@@ -76,8 +78,8 @@ async def search_movies_compact_endpoint(title: str, service: GetTrailerService)
         },
         status.HTTP_400_BAD_REQUEST: {
             'model': models.HttpError,
-            'description': 'Returns a 400 if there a problem with the youtube api or \
-                invalid data',
+            'description': 'Returns a 400 if there a problem with the youtube api, \
+                thee movie data api, or invalid data',
         },
         status.HTTP_404_NOT_FOUND: {
             'model': models.HttpError,
@@ -92,12 +94,20 @@ async def search_movie_data_with_trailer(imdb_id: str, service: GetTrailerServic
         )
     except InvalidIMDBId as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except OmdbApiError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail='OMDB_API_ERROR'
+        )
     except YoutubeApiError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='YOUTUBE_API_ERROR'
         )
     except InvalidTrailerData as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except JSONDecodeError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='INVALID_IMDB_ID'
+        )
     # except ValidationError:
     #     raise HTTPException(
     #         status_code=status.HTTP_400_BAD_REQUEST, detail='INVALID_REQUEST'
