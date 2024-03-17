@@ -1,7 +1,11 @@
 from hashlib import md5
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+
 from fastapi import Request, Response
 from fastapi.concurrency import iterate_in_threadpool
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    RequestResponseEndpoint
+)
 
 
 class CacheHeaderMiddleware(BaseHTTPMiddleware):

@@ -1,17 +1,16 @@
-from contextlib import asynccontextmanager
 import logging
 import os
+from contextlib import asynccontextmanager
+
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.middlewares import CacheHeaderMiddleware
-from app.utilities import custom_generate_unique_id
-
-from app.trailer.routers.router import router as trailer_router
-from app.trailer.routers.router_v2 import router as v2_trailer_router
 from app.trailer.routers.mock_router import router as mock_trailer_router
 from app.trailer.routers.mock_router_v2 import router as v2_mock_trailer_router
-
+from app.trailer.routers.router import router as trailer_router
+from app.trailer.routers.router_v2 import router as v2_trailer_router
+from app.utilities import custom_generate_unique_id
 
 log = logging.getLogger('uvicorn')
 

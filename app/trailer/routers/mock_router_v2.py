@@ -5,7 +5,6 @@ from app.trailer.dependencies import GetMockTrailerService
 from app.trailer.exceptions import InvalidIMDBId
 from tests.data.trailer.mock_utilities import MockMovies
 
-
 router = APIRouter(prefix='/trailer', tags=['mock-trailer-v2'])
 
 

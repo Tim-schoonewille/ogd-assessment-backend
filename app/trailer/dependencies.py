@@ -1,6 +1,7 @@
 from typing import Annotated, TypeAlias
 
 from fastapi import Depends
+
 from app.config import GetConfig
 from app.redis import GetAsyncCache
 from app.trailer.interfaces import ITrailerService

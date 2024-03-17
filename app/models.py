@@ -23,15 +23,15 @@ class HttpError(CustomBase):
 
 
 from app.trailer.models import (  # noqa
-    MovieData,
+    CachePrefixes,
     CompactMovieData,
-    YoutubeID,
-    YoutubeTrailerData,
-    YoutubeTrailerDataSnippet,
+    MovieData,
     MovieDataWithTrailer,
     TrailerResult,
-    CachePrefixes,
     TrailerSearchForm,
+    YoutubeID,
+    YoutubeTrailerData,
+    YoutubeTrailerDataSnippet
 )
 
 MovieDataWithTrailer.model_rebuild()

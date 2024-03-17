@@ -1,10 +1,10 @@
 from typing import Annotated, TypeAlias
+
 from fastapi import Depends
 from redis import asyncio as aioredis
 from redis.asyncio import Redis as AsyncRedis
 
 from app.config import get_config
-
 
 config = get_config()
 

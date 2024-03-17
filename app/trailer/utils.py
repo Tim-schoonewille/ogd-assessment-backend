@@ -2,6 +2,9 @@ from typing import Any
 
 from httpx import AsyncClient, ConnectTimeout
 from pydantic import ValidationError
+
+
+from app import models
 from app.config import ConfigBase
 from app.trailer.exceptions import (
     InvalidIMDBId,
@@ -11,7 +14,6 @@ from app.trailer.exceptions import (
     YoutubeApiError,
 )
 from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider
-from app import models
 from app.trailer.models import MovieDataWithTrailer, YoutubeTrailerData
 
 

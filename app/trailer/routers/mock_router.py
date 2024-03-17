@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 
+
 from app import models
 from app.trailer.dependencies import GetMockTrailerService
 from app.trailer.exceptions import MovieNotFoundError
-
 
 router = APIRouter(prefix='/trailer', tags=['mock-trailer-v1'])
 

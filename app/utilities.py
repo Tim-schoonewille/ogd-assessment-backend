@@ -1,9 +1,10 @@
 import json
 from typing import Any
+
 from fastapi.routing import APIRoute
 
-from redis.asyncio import Redis as AsyncRedis
 from app.interfaces import ICacheProvider
+from redis.asyncio import Redis as AsyncRedis
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:

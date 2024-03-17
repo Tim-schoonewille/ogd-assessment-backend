@@ -4,7 +4,6 @@ from app import models
 from app.trailer.dependencies import GetTrailerService
 from app.trailer.exceptions import MovieNotFoundError
 
-
 router = APIRouter(prefix='/trailer', tags=['trailer-service-v1'])
 
 

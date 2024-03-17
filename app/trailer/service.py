@@ -1,8 +1,13 @@
 from typing import Any
+
 from app import models
 from app.config import ConfigBase
 from app.interfaces import ICacheProvider
-from app.trailer.interfaces import IMovieDataProvider, ITrailerProvider, ITrailerService
+from app.trailer.interfaces import (
+    IMovieDataProvider,
+    ITrailerProvider,
+    ITrailerService
+)
 from app.trailer.models import TrailerResult
 
 

@@ -9,7 +9,6 @@ from app.trailer.exceptions import (
     YoutubeApiError,
 )
 
-
 router = APIRouter(prefix='/trailer', tags=['trailer-service-v2'])
 
 
