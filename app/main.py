@@ -4,10 +4,9 @@ import os
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.trailer.utils import CacheHeaderMiddleware
+from app.middlewares import CacheHeaderMiddleware
 from app.utilities import custom_generate_unique_id
 
-# from app.test.router import router as test_router
 from app.trailer.routers.router import router as trailer_router
 from app.trailer.routers.router_v2 import router as v2_trailer_router
 from app.trailer.routers.mock_router import router as mock_trailer_router
@@ -47,7 +46,6 @@ def init_fastapi(testing: bool = False) -> FastAPI:
     api_v2 = APIRouter(prefix='/api/v2')
     mock_v2 = APIRouter(prefix='/mock/v2')
 
-    # api_v1.include_router(router=test_router)
     api_v1.include_router(router=trailer_router)
 
     api_v2.include_router(router=v2_trailer_router)
