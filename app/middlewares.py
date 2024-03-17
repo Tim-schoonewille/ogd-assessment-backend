@@ -5,6 +5,20 @@ from fastapi.concurrency import iterate_in_threadpool
 
 
 class CacheHeaderMiddleware(BaseHTTPMiddleware):
+    """
+    This middleware injects the following headers to every response:
+
+        'Cache-Control': 'public, max-age=300',
+        'ETag': {MD5 hash of the response}
+
+    Every call to the endpoint gets analyzed to check whether the 'If-None-Match' headers
+    are present. If it is, it will evaluate the ETag against the current generated hash.
+    If they match, it well respond with a '304 not modified'.
+
+    If the header is not present, it will generate a new etag and inject it to the
+    headers.
+    """
+
     async def dispatch(
         self,
         request: Request,
@@ -25,7 +39,7 @@ class CacheHeaderMiddleware(BaseHTTPMiddleware):
                 print('Etags match!')
                 response.status_code = 304
                 return response
-        response.headers.update({'Cache-Control': 'public, max-age=10'})
+        response.headers.update({'Cache-Control': 'public, max-age=300'})
         etag = md5(body).hexdigest()
 
         response.headers.update({'ETag': str(etag)})

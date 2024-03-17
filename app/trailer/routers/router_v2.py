@@ -75,6 +75,11 @@ async def search_movies_compact_endpoint(title: str, service: GetTrailerService)
             'model': models.MovieDataWithTrailer,
             'description': 'Returns a MovieDataWithTrailer object on success.',
         },
+        status.HTTP_400_BAD_REQUEST: {
+            'model': models.HttpError,
+            'description': 'Returns a 400 if there a problem with the youtube api or \
+                invalid data',
+        },
         status.HTTP_404_NOT_FOUND: {
             'model': models.HttpError,
             'description': 'Returns a 404 if the imdb ID is not found.',
@@ -98,6 +103,4 @@ async def search_movie_data_with_trailer(imdb_id: str, service: GetTrailerServic
     #     raise HTTPException(
     #         status_code=status.HTTP_400_BAD_REQUEST, detail='INVALID_REQUEST'
     #     )
-    # TODO WHY WAS THIS IN HERE?
-    # Probably when converting to a pydantic model somewhere
     return movie_data_with_trailer
