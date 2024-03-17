@@ -11,7 +11,7 @@ export default function Landing() {
         minHeight="100vh"
       >
         <ScaleFade in={true} initialScale={0.01}>
-          <Heading mb={5}>Search trailers</Heading>
+          <Heading mb={5}>Search trailerss</Heading>
           <Flex gap={5}>
             <Link to={"/v2/search"}>
               <Button colorScheme="teal" size="lg">

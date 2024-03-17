@@ -19,6 +19,7 @@ import MovieCardWithImage from "../ui/MovieCard";
 import { CompactMovieData, MovieDataWithTrailer } from "../types";
 import { FormEvent, useState } from "react";
 import { BiCameraMovie } from "react-icons/bi";
+import { API_URL } from "../api_url";
 
 export default function SearchMockV2() {
   const [title, setTitle] = useState("");
@@ -38,19 +39,16 @@ export default function SearchMockV2() {
     setMoviesWithTrailer([]);
     setErrorData("");
     setErrorFlag(false);
-    const URL = "http://localhost:8000/api/v2/trailer/search";
+    const URL = `${API_URL}api/v2/trailer/search`;
 
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `${URL}?title=${query}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${URL}?title=${query}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setCompactMovieData(data);
@@ -58,15 +56,12 @@ export default function SearchMockV2() {
         const dataArray = [];
 
         for (const movie of data) {
-          const response = await fetch(
-            `${URL}/${movie.imdbid}`,
-            {
-              method: "GET",
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
+          const response = await fetch(`${URL}/${movie.imdbid}`, {
+            method: "GET",
+            headers: {
+              "content-type": "application/json",
+            },
+          });
           if (response.ok) {
             const result = await response.json();
 

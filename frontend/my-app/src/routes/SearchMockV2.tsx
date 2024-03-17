@@ -19,6 +19,7 @@ import MovieCardWithImage from "../ui/MovieCard";
 import { CompactMovieData, MovieDataWithTrailer } from "../types";
 import { FormEvent, useState } from "react";
 import { BiCameraMovie } from "react-icons/bi";
+import { API_URL } from "../api_url";
 
 export default function SearchMockV2() {
   const [title, setTitle] = useState("");
@@ -39,7 +40,7 @@ export default function SearchMockV2() {
     setMoviesWithTrailer([]);
     setErrorData("");
     setErrorFlag(false);
-    const URL = "http://localhost:8000/mock/v2/trailer/search";
+    const URL = `${API_URL}mock/v2/trailer/search`;
 
     try {
       setIsLoading(true);
