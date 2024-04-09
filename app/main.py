@@ -30,7 +30,12 @@ def init_fastapi(testing: bool = False) -> FastAPI:
         generate_unique_id_function=custom_generate_unique_id,
     )
 
-    origins = ['http://localhost', 'http://localhost:3000', 'http://localhost:5500']
+    origins = [
+        'http://localhost',
+        'http://localhost:3000',
+        'http://localhost:5500',
+        'http://localhost:3001',
+    ]
     server.add_middleware(
         CORSMiddleware,
         allow_origins=origins,

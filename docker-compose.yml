@@ -29,12 +29,21 @@ services:
   
   frontend-react:
     build:
-      context: ./frontend/svelte-frontend
+      context: ./frontend/my-app
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     # volumes:
     #   - ./frontend/my-app:/app
+
+  svelte-frontend:
+    build:
+      context: ./frontend/svelte-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend/svelte-frontend:/app
 
 volumes:
   cache_volume:

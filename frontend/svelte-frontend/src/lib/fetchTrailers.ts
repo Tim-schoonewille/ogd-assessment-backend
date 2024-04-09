@@ -3,12 +3,11 @@ import type { CompactMovieData, MovieDataWithTrailer } from './types';
 export async function fetchCompactMovieData(title: string): Promise<CompactMovieData[]> {
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v2/trailer/search?title=${title}&networK_lag=0`,
+			`http://fastapi:8000/mock/v2/trailer/search?title=${title}&networK_lag=0`,
 			{
 				method: 'GET',
 				headers: {
-					'Content-Type': 'application/json',
-					'Cache-Control': 'public'
+					'Content-Type': 'application/json'
 				}
 			}
 		);
@@ -26,7 +25,7 @@ export async function fetchCompactMovieData(title: string): Promise<CompactMovie
 export async function fetchTrailer(imdbID: string): Promise<MovieDataWithTrailer> {
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v2/trailer/search/${imdbID}?network_lag=0.01`,
+			`http://fastapi:8000/mock/v2/trailer/search/${imdbID}?network_lag=0.01`,
 			{
 				method: 'GET',
 				headers: {
